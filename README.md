@@ -8,3 +8,16 @@ Anu Pandey
 Dylan Fox
 Sun Soravis
 
+## Requirements
+
+* Python >= 3.6
+
+## Getting Started
+
+To get started, use the following command from the project root directory
+
+``` sh
+export BOT_ID=YOUR_BOT_ID
+export SLACK_BOT_TOKEN=YOUR_SLACK_BOT_TOKEN
+python starter_slackbot/Scripts/starterbot.py
+```
