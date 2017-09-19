@@ -1,1 +1,1 @@
-web: Scripts/starterbot.py
+web: python Scripts/starterbot.py
