@@ -1,7 +1,9 @@
 import os
 import time
 from slackclient import SlackClient
-
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from minimal_http_server import MinimalHTTPRequestHandler
+from threading import Thread
 
 # starterbot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
@@ -13,6 +15,7 @@ EXAMPLE_COMMAND = "do"
 # instantiate Slack & Twilio clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
+PORT = int(os.environ.get("PORT", "8080"))
 
 def handle_command(command, channel):
     """
@@ -43,9 +46,16 @@ def parse_slack_output(slack_rtm_output):
                        output['channel']
     return None, None
 
+def runHttp(server_class=HTTPServer, handler_class=MinimalHTTPRequestHandler):
+    server_address = ('', PORT)
+    httpd = server_class(server_address, handler_class)
+    httpd.serve_forever()
 
 if __name__ == "__main__":
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
+    print("starting HTTP Server")
+    thread = Thread(target = runHttp)
+    thread.start()
     if slack_client.rtm_connect():
         print("StarterBot connected and running!")
         while True:
@@ -55,3 +65,4 @@ if __name__ == "__main__":
             time.sleep(READ_WEBSOCKET_DELAY)
     else:
         print("Connection failed. Invalid Slack token or bot ID?")
+
