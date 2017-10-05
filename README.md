@@ -18,12 +18,11 @@ To get started, use the following command from the project root directory
 
 ``` sh
 pip install pipenv # Install Pipenv if you do not have one
-cd starter_slackbot
-pipenv run python3 Scripts/starterbot.py
+pipenv run python3 Slackbot/slackbot.py
 
 export BOT_ID=YOUR_BOT_ID
 export SLACK_BOT_TOKEN=YOUR_SLACK_BOT_TOKEN
-python starter_slackbot/Scripts/starterbot.py
+python Slackbot/slackbot.py
 ```
 ## Production Deployment
 
@@ -40,3 +39,17 @@ heroku config:set BOT_ID=YOUR_BOT_ID
 heroku config:set SLACK_BOT_TOKEN=YOUR_SLACK_BOT_TOKEN
 git push heroku master
 ```
+
+## Testing
+
+### Run all testcases at once
+``` sh
+py.test
+```
+
+### Run Individual Tests
+```
+py.test Tests/test_intent_recognizer.py -s
+py.test Tests/test_intent_responder.py -s
+py.test Tests/test_message_formatter.py -s
+````
