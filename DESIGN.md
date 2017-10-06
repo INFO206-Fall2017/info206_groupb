@@ -13,7 +13,6 @@ Usecases
 ---------------------------
 Assumptions and Constraints 
 ---------------------------
-
 Our users can interact with our slackbot by sending direct messages. We expect the input to be in a special format(described below). Our BB Bot would prompt the user to input their response in this special format. BB Bot would provide user with directions and sample responses to help them frame their search request in the desired format. The user can chose to enter their input in one of the following format. The BB Bot would also provide the user with a link to access the names all BART and NextBus stations.
 
 ### CASE A: For BART search request
