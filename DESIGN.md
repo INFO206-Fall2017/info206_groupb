@@ -9,7 +9,7 @@ Usecases
 --------
 
 
-Assumptions and Constraints 
+
 ---------------------------
 Assumptions and Constraints 
 ---------------------------
