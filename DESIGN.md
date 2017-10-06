@@ -4,13 +4,18 @@ BB Bot Design Document
 Problem Statement
 -----------------
 
+Our program will create a slack bot that fetches and displays upcoming BART train and bus departure times based on user input. 
 
 Usecases
 --------
 
+Our users will be those that use the School of Information Slack and rely on public transportation. The full process will behave as follows:
+1. Users send the bot a direct message or invite it into a Slack channel.
+2. Users can request information about a particular bus or BART stop.
+3. The bot will format the user’s request and send it to either the NextBus or BART API, as appropriate.
+4. The bot will format the response it receives and display upcoming departure times for that stop.
 
 
----------------------------
 Assumptions and Constraints 
 ---------------------------
 Our users can interact with our slackbot by sending direct messages. We expect the input to be in a special format(described below). Our BB Bot would prompt the user to input their response in this special format. BB Bot would provide user with directions and sample responses to help them frame their search request in the desired format. The user can chose to enter their input in one of the following format. The BB Bot would also provide the user with a link to access the names all BART and NextBus stations.
