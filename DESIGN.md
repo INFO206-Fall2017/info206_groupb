@@ -55,13 +55,136 @@ Similarly, though we would like to have a “Plan Ahead” feature in our slack 
 However, If time permits, we will provide the user the option of entering two BART stations - the departing from(A) and the arriving at station(B). The user would not need to enter the BART line in this case. The output will return the time for next BART that would help user to reach point B  from point A.
 
 
-
 Architecture
 ------------
+The major features of the bot includes
+* Responding to the user’ query about the schedules from a specific  BART station
+* Responding to the user’s query about the schedules from a specific Bus station
 
+At the top level, the bot will run as a Python program that interacts with Slack’s Real-time messaging (RTM) API. The program will also include a simple HTTP server to keep itself running on Heroku. 
+
+![architecture](https://github.com/INFO206-Fall2017/info206_groupb/raw/master/Doc/top-level-architecture.jpg)
+
+
+The architecture for the BB Bot itself can be illustrated as follows:
+
+![architecture](https://github.com/INFO206-Fall2017/info206_groupb/raw/master/Doc/bot-architecture.jpg)
+
+The major components includes :
+### Message Handler
+The component listens to the messages received via Slack RTM API and filters out messages irrelevant to the operation of the bot (i.e. messages that do not mention the bot). It then passes the relevant messages to the Intent Recognizer
+
+### Intent Recognizer
+The module recognizes the real intent and entities from a message. For example, the module should be able to recognize “bart richmond fremont” to a RouteQueryIntent with “Richmond” and “Fremont” as the entities.
+
+### Intent Responder
+Respond to the intent recognized by gathering data from the right APIs, format it, and send a response back to the user. 
+
+### Data API Wrappers
+Simplify the process of interacting with BART and NextBus APIs. The modules should provide python methods for the intent responder to call.
+  
+### Message Formatter
+Formats the messages to be sent back to the user. 
+
+The components will work together to handle user’s messages as shown in this pseudo code. 
+
+```
+On message received from Slack do:
+  For message in all messages:
+    If message relevant to the bot:
+      (Intent and Entities) = RecognizeIntent(message)
+      If Intent is IntentType1:
+        Response = RespondToIntentType1(Intent, Entities)
+        FormattedResponse = FormatMessage(Response)
+        SendMessageBackToSlack(FormattedResponse)
+      If Intent is IntentType2:
+        Response = RespondToIntentType2(Intent, Entities)
+        FormattedResponse = FormatMessage(Response)
+```
 
 Implementation Plan
 -------------------
+
+### Intent Recognition
+We will use [Wit.ai](https://wit.ai/) for intent recognition. We’ll first build a conversational model in Wit.ai with the following intents
+* BART Query Intent: 
+  Indicates that the user would like to ask for BART schedules.
+* Bus Query Intent: 
+  Indicates that the user would like to ask for bus schedules.
+* Help Intent:
+  Indicates that the user needs help on how to use the bot.
+  We’ll then use the conversational model from python via Wit.ai’s REST API.
+
+
+### API Wrapper
+The API wrappers will be developed by our team members using python’s `request` library to consume NextBus API (with XML) and BART API (with json).
+
+### Message Formatting
+The message formatter will be developed by our team members. We’ll use the Slack API to format messages as described in Slack’s [message formating document](https://api.slack.com/docs/message-formatting  )  
+
+### Object Oriented Design
+
+Our data classes includes
+
+#### Intent Classes
+
+* Intent
+  Represents the base class for intents
+* BARTQueryIntent (a subclass of Intent)
+  Represents an user’s intent to query for BART schedules Attributes:
+  * origin (string): The origin BART station
+  * destination: (string, optional): The destination BART station.
+  The class expects the destination to be non-null.
+* BusQueryIntent (a subclass of Intent)
+  Represents a user’s intent to query for bus schedules
+  Attributes:
+  * origin (string): The origin bus station
+  * route (string): The AC Transit bus route in question, for example “6”, “51B”
+  * direction (string, optional): The direction in question, for example, “Northbound” 
+  * destination (string, optional): The destination bus station
+  The class expects either of the direction or the destination to be non-null.
+* HelpIntent (a subclass of Intent)
+  Represents a user’s intent to ask for help on using the bot.
+
+#### Response Classes
+* BARTRoutesResponse
+  Represents a response containing BART route schedules
+  Attributes:
+  * routes (list of BARTRoute): The routes and its schedule of departures 
+* BusRoutesResponse
+  Represents a response containing bus route schedules
+  Attributes:
+  * departures (list of  DateTime): The schedule of departures from that specific route.
+
+### Feature breakdown:
+
+* Slackbot setup (python): 
+  * Member: All team members
+  * Estimated effort: 1 mandays
+
+* Slackbot setup (Heroku): 
+  * Member: Soravis
+  * Estimated effort: 0.5 mandays
+
+* BART api access: 
+  * Member: Anu
+  * Estimated Completion Date: 10/10
+
+* Nextbus api access:
+  * Member: Dylan
+  * Estimated Completion Date: 10/10
+
+* Slackbot Intent Recognizer on Wit.ai:
+  * Member: Soravis
+  * Estimated effort: 3 mandays
+
+* Message formatter:
+  * Member: Devin 
+  * Estimated effort: 3 mandays
+
+* Integration & Testing
+  * Members: all
+  * Estimated completion: 10/16
 
 
 Test Plan
