@@ -1,4 +1,4 @@
-import requests
+iimport requests
 import json
 
 '''
@@ -20,26 +20,40 @@ def pretty_print_dict(any_dict=None):
     return json.dumps(any_dict, sort_keys=True, indent=4)
 
 
+def get_bart_json(page=""):
+    response = requests.get(page)
+
+    # This raises a ValueError if status_code is not 200
+    if response.status_code != 200:
+        raise ValueError(
+            "There is some problem with API - Check whether page %s is accessible" % (page))
+
+    return response.text
+
+
 class BartApi(object):
+    API_KEY = 'MW9S-E7SL-26DU-VV8V'
+    API_PREFIX = 'https://api.bart.gov/api'
+
     def __init__(self):
-        self.api_key = 'MW9S-E7SL-26DU-VV8V'
-        self.api_prefix = 'https://api.bart.gov/api'
+        self.station_name_abbr_dict, self.station_abbr_name_dict = self.get_station_name_dict()
 
-    # This can be used to find all stations and corresponding abbr (required for page request)
     def get_station_name_dict(self):
-        station_list_page = '%s/stn.aspx?cmd=stns&key=%s&json=y' % (self.api_prefix, self.api_key)
-        response = requests.get(station_list_page)
+        '''
+            This can be used to find all stations and corresponding abbr (required for page request)
+        '''
+        station_list_page = '%s/stn.aspx?cmd=stns&key=%s&json=y' % (
+            BartApi.API_PREFIX, BartApi.API_KEY)
 
-        # This raises a ValueError if status_code is not 200
-        if response.status_code != 200:
-            raise ValueError(
-                "There is some problem with API - Check whether page %s is accessible" % (station_list_page))
-
-        payload_dict = json.loads(response.text)
+        bart_json = get_bart_json(page=station_list_page)
+        payload_dict = json.loads(bart_json)
         # print(pretty_print_dict(payload_dict))
 
-        # loading json output returns a dictionary"payload_dict" - which comprises of a list of stations - which is further comprised of dict
-        #{[{},{},{},{}],[{},{},{},{}],[{},{},{},{}],[{},{},{},{}]}
+        '''
+        loading json output returns a dictionary"payload_dict" - which comprises of a list of
+        stations - which is further comprised of dict
+        {[{},{},{},{}],[{},{},{},{}],[{},{},{},{}],[{},{},{},{}]}
+        '''
 
         station_list = payload_dict['root']['stations']['station']
 
@@ -75,33 +89,29 @@ class BartApi(object):
             station_name_abbr_dict[name] = abbr
             station_abbr_name_dict[abbr] = name
 
-        return station_name_abbr_dict, station_abbr_name_dict
         # print(station_name_abbr_dict, station_abbr_name_dict)
+        return station_name_abbr_dict, station_abbr_name_dict
 
-    def get_estimated_times(self, origin_station_name='fremont', line_final_station_name=None):
-        """get_estimated_times function returns the time after which the user can catch the next BART
-        from a input station by specifying a origin station and line"""
+    def get_estimated_times(self,
+                            origin_station_name='fremont',
+                            line_final_station_name=None):
+        """
+            get_estimated_times function returns the time after which the user can catch the next
+            BART from a input station by specifying a origin station and line
+        """
 
         origin_station_name = origin_station_name.upper()
 
-        station_name_abbr_dict, station_abbr_name_dict = self.get_station_name_dict()
-
-        if origin_station_name not in station_name_abbr_dict:
+        if origin_station_name not in self.station_name_abbr_dict:
             raise ValueError("No such origin station found - %s" % (origin_station_name))
 
-        origin_station_abbr = station_name_abbr_dict[origin_station_name]
+        origin_station_abbr = self.station_name_abbr_dict[origin_station_name]
 
         etd_page = '%s/etd.aspx?cmd=etd&orig=%s&key=%s&json=y' % (
-            self.api_prefix, origin_station_abbr, self.api_key)
+            BartApi.API_PREFIX, origin_station_abbr, BartApi.API_KEY)
 
-        response = requests.get(etd_page)
-
-        # This raises a ValueError if status_code is not 200
-        if response.status_code != 200:
-            raise ValueError(
-                "There is some problem with API - Check whether page %s is accessible" % (etd_page))
-
-        payload_dict = json.loads(response.text)
+        bart_json = get_bart_json(page=etd_page)
+        payload_dict = json.loads(bart_json)
         # print(pretty_print_dict(payload_dict))
 
         etd_list = payload_dict['root']['station'][0]['etd']
@@ -134,7 +144,6 @@ class BartApi(object):
         line_final_station_name = line_final_station_name.upper()
 
         if line_final_station_name not in destination_etd_dict:
-            # raise ValueError("No such line final station found - %s" % (line_final_station_name))
             print("No such line final station found - %s" % (line_final_station_name))
             return destination_etd_dict
 
@@ -146,64 +155,54 @@ class BartApi(object):
                             origin_station_name='fremont',
                             destination_station_name='pittburgh'):
 
-        station_name_abbr_dict, station_abbr_name_dict = self.get_station_name_dict()
-
-        # print(pretty_print_dict(station_abbr_name_dict))
-
         origin_station_name = origin_station_name.upper()
-        if origin_station_name not in station_name_abbr_dict:
-            raise ValueError("No such origin station found - %s" % (origin_station_name))
-
-        origin_station_abbr = station_name_abbr_dict[origin_station_name]
-
         destination_station_name = destination_station_name.upper()
-        if destination_station_name not in station_name_abbr_dict:
-            raise ValueError("No such origin station found - %s" % (destination_station_name))
-        destination_station_abbr = station_name_abbr_dict[destination_station_name]
+
+        if origin_station_name not in self.station_name_abbr_dict:
+            raise ValueError("No such origin station found - %s" % (origin_station_name))
+        elif destination_station_name not in self.station_name_abbr_dict:
+            print("No such destination station found - %s" % (destination_station_name))
+            return self.get_estimated_times(origin_station_name=origin_station_name,
+                                            line_final_station_name=None)
+
+        origin_station_abbr = self.station_name_abbr_dict[origin_station_name]
+        destination_station_abbr = self.station_name_abbr_dict[destination_station_name]
 
         quick_planner_page = '%s/sched.aspx?cmd=arrive&orig=%s&dest=%s&key=%s&json=y' % (
-            self.api_prefix, origin_station_abbr, destination_station_abbr, self.api_key)
+            BartApi.API_PREFIX, origin_station_abbr, destination_station_abbr, BartApi.API_KEY)
 
-        response = requests.get(quick_planner_page)
+        bart_json = get_bart_json(page=quick_planner_page)
+        payload_dict = json.loads(bart_json)
 
-        # This raises a ValueError if status_code is not 200
-        if response.status_code != 200:
-            raise ValueError(
-                "There is some problem with API - Check whether page %s is accessible" % (quick_planner_page))
-
-        payload_dict = json.loads(response.text)
-
-        first_leg_train_final_station_abbr = payload_dict['root'][
+        first_leg_final_station_abbr = payload_dict['root'][
             'schedule']['request']['trip'][0]['leg'][0]['@trainHeadStation']
-        if first_leg_train_final_station_abbr not in station_abbr_name_dict:
+        if first_leg_final_station_abbr not in self.station_abbr_name_dict:
+            # print(pretty_print_dict(self.station_abbr_name_dict))
             raise ValueError("No such station abbr found - %s" %
-                             (first_leg_train_final_station_abbr))
+                             (first_leg_final_station_abbr))
 
-        line_final_station_name = station_abbr_name_dict[first_leg_train_final_station_abbr]
+        line_final_station_name = self.station_abbr_name_dict[first_leg_final_station_abbr]
 
         return self.get_estimated_times(origin_station_name=origin_station_name,
                                         line_final_station_name=line_final_station_name)
 
 
 if __name__ == "__main__":
+    bart_api = BartApi()
+
+    # print('List of all BART stations')
+    # for key, value in bart_api.station_name_abbr_dict.items():
+    #     print("%40s: %s" % (key, value))
+    #
+    # print('\n')
+
+    # for key, value in bart_api.station_abbr_name_dict.items():
+    #     print("%s: %40s" % (key, value))
+    #
+    # print('\n')
 
     origin_station_name = input("Enter the name of BART station you want to board from: ")
     line_final_station_name = input("Enter the BART line you want to take: ")
-
-    bart_api = BartApi()
-
-    station_name_abbr_dict, station_abbr_name_dict = bart_api.get_station_name_dict()
-
-    # print('List of all BART stations')
-    # for key, value in station_name_abbr_dict.items():
-    #     print("%40s: %s" % (key, value))
-
-    # print('\n')
-
-    # for key, value in station_abbr_name_dict.items():
-    #     print("%s: %40s" % (key, value))
-
-    # print('\n')
 
     print('\nETD from {}'.format(origin_station_name.upper()), 'station')
 
