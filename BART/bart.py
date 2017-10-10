@@ -128,6 +128,9 @@ class BartApi(object):
         if not line_final_station_name:
             return destination_etd_dict
 
+        if 'warm' in line_final_station_name.lower():
+            line_final_station_name = 'warm springs'
+
         line_final_station_name = line_final_station_name.upper()
 
         if line_final_station_name not in destination_etd_dict:
@@ -138,6 +141,48 @@ class BartApi(object):
         destination_etd_line_dict = {}
         destination_etd_line_dict[line_final_station_name] = destination_etd_dict[line_final_station_name]
         return destination_etd_line_dict
+
+    def first_leg_train_etd(self,
+                            origin_station_name='fremont',
+                            destination_station_name='pittburgh'):
+
+        station_name_abbr_dict, station_abbr_name_dict = self.get_station_name_dict()
+
+        # print(pretty_print_dict(station_abbr_name_dict))
+
+        origin_station_name = origin_station_name.upper()
+        if origin_station_name not in station_name_abbr_dict:
+            raise ValueError("No such origin station found - %s" % (origin_station_name))
+
+        origin_station_abbr = station_name_abbr_dict[origin_station_name]
+
+        destination_station_name = destination_station_name.upper()
+        if destination_station_name not in station_name_abbr_dict:
+            raise ValueError("No such origin station found - %s" % (destination_station_name))
+        destination_station_abbr = station_name_abbr_dict[destination_station_name]
+
+        quick_planner_page = '%s/sched.aspx?cmd=arrive&orig=%s&dest=%s&key=%s&json=y' % (
+            self.api_prefix, origin_station_abbr, destination_station_abbr, self.api_key)
+
+        response = requests.get(quick_planner_page)
+
+        # This raises a ValueError if status_code is not 200
+        if response.status_code != 200:
+            raise ValueError(
+                "There is some problem with API - Check whether page %s is accessible" % (quick_planner_page))
+
+        payload_dict = json.loads(response.text)
+
+        first_leg_train_final_station_abbr = payload_dict['root'][
+            'schedule']['request']['trip'][0]['leg'][0]['@trainHeadStation']
+        if first_leg_train_final_station_abbr not in station_abbr_name_dict:
+            raise ValueError("No such station abbr found - %s" %
+                             (first_leg_train_final_station_abbr))
+
+        line_final_station_name = station_abbr_name_dict[first_leg_train_final_station_abbr]
+
+        return self.get_estimated_times(origin_station_name=origin_station_name,
+                                        line_final_station_name=line_final_station_name)
 
 
 if __name__ == "__main__":
@@ -164,6 +209,15 @@ if __name__ == "__main__":
 
     etd_dict = bart_api.get_estimated_times(origin_station_name=origin_station_name,
                                             line_final_station_name=line_final_station_name)
+    for key, value in etd_dict.items():
+        print("%20s: %s" % (key, value))
+
+    print('\n')
+
+    origin_station_name = input("Enter the name of BART station you want to board from: ")
+    destination_station_name = input("Enter the name of final BART station: ")
+    etd_dict = bart_api.first_leg_train_etd(origin_station_name=origin_station_name,
+                                            destination_station_name=destination_station_name)
     for key, value in etd_dict.items():
         print("%20s: %s" % (key, value))
 
