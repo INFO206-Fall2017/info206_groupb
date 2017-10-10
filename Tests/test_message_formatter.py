@@ -15,6 +15,27 @@ class MessageFormatterTest(unittest.TestCase):
       formatter = message_formatter.MessageFormatter()
       print('\nTesting format without BARTQueryResponse')
       bart_response = BARTQueryResponse()
+      bart_response.routes = [
+        {
+          "origin": "Downtown Berkeley",
+          "destination": "Fremont",
+          "departures": [
+            "Leaving",
+            "15",
+            "30"
+          ]
+        },
+        {
+          "origin": "Downtown Berkeley",
+          "destination": "SFO / Millbrae",
+          "departures": [
+            "2",
+            "18",
+            "22"
+          ]
+        }
+      ]
+
       slack_response = formatter.format(bart_response)
       print(slack_response, '\n')
       self.assertIsNotNone(slack_response)
@@ -22,8 +43,18 @@ class MessageFormatterTest(unittest.TestCase):
     def test_bus(self):
       formatter = message_formatter.MessageFormatter()
       print('\nTesting format without BusQueryResponse')
-      bart_response = BusQueryResponse()
-      slack_response = formatter.format(bart_response)
+      bus_response = BusQueryResponse()
+      bus_response.route = {
+        "origin": "Emeryville",
+        "route_name": "57",
+        "destination": "Macarthur and Maple",
+        "departures": [
+          "Leaving",
+          "2",
+          "18"
+        ]
+      }
+      slack_response = formatter.format(bus_response)
       print(slack_response, '\n')
       self.assertIsNotNone(slack_response)
 
