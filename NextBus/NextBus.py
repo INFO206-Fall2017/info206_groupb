@@ -95,10 +95,41 @@ class NextBusAPI(object):
         self.predictionRequestFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=%s&r=%s&s=%s' %(agency, route, stop))
         self.predictionRequest = ET.parse(self.predictionRequestFeed)
 
-    def stopTitles(self, routeConfig):
-        """
+        self.busDepartureTimes = []
+        self.predictionRequestRoot = self.predictionRequest.getroot()
+        for predictions in self.predictionRequestRoot:
+            for direction in predictions:
+                for prediction in direction:
+                    #print(prediction.items())
+                    self.busDepartureTimes.append(prediction.get('minutes'))
 
-        """
+
+    def BartRoutesResponse(self, routeInput, stopInput, directionInput):
+        """Takes stop, route, and direction as input. Returns estimated departure time in minutes."""
+        self.routeInput = routeInput
+        self.stopInput = stopInput
+        self.directionInput = directionInput
+        #self.agencyTag = 'actransit' already, from initiation
+
+        #From route title, find route tag
+        self.getRouteList(self.agencyTag)
+        #route dictionary will be defined, with title:tag
+        self.routeTag = self.routeDictionary[self.routeInput]
+        print('Route Input:', self.routeInput, 'Route Tag:', self.routeTag)
+
+        #From stop title, find stop tag
+        self.getRouteConfig(self.agencyTag, self.routeTag)
+        #self.stopsDictionary will be defined, with stop title:stop tag
+        self.stopTag = self.stopsDictionary[self.stopInput]
+        print('Stop Input:', self.stopInput, 'Stop Tag:', self.stopTag)
+
+
+        #Make prediction request
+        self.getPredictionRequest(self.agencyTag, self.routeTag, self.stopTag)
+        #self.busDepartureTimes will be defined
+        print(self.busDepartureTimes)
+
+
 
 
 
@@ -122,12 +153,12 @@ if __name__ == '__main__':
     # for child in routeListRoot:
     #     print(child.get('title'))
     """
-
+    """
     #Test: print route config
     NextBus.routeTag = '57'
     NextBus.getRouteConfig(NextBus.agencyTag, NextBus.routeTag)
     print(NextBus.stopsDictionary)
-
+    """
     """
     #Test: print prediction request
     NextBus.routeTag = '57'
@@ -139,4 +170,7 @@ if __name__ == '__main__':
         for item in child:
             print(item.items())
     """
+
+    #Test: BARTRoutesResponse
+    NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57", directionInput = "Foothill Square" )
     # pass

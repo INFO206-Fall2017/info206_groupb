@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<body copyright="All data copyright AC Transit 2017.">
+<route tag="B" title="B"/>
+<route tag="BSD" title="Broadway Shuttle Day"/>
+<route tag="BSN" title="Broadway Shuttle Night"/>
+<route tag="C" title="C"/>
+<route tag="CB" title="CB"/>
+<route tag="E" title="E"/>
+<route tag="F" title="F"/>
+<route tag="FS" title="FS"/>
+<route tag="G" title="G"/>
+<route tag="H" title="H"/>
+<route tag="J" title="J"/>
+<route tag="L" title="L"/>
+<route tag="LA" title="LA"/>
+<route tag="LC" title="LC"/>
+<route tag="M" title="M"/>
+<route tag="NL" title="NL"/>
+<route tag="NX" title="NX"/>
+<route tag="NXC" title="NXC"/>
+<route tag="NX1" title="NX1"/>
+<route tag="NX2" title="NX2"/>
+<route tag="NX3" title="NX3"/>
+<route tag="NX4" title="NX4"/>
+<route tag="O" title="O"/>
+<route tag="OX" title="OX"/>
+<route tag="P" title="P"/>
+<route tag="S" title="S"/>
+<route tag="SB" title="SB"/>
+<route tag="U" title="U"/>
+<route tag="V" title="V"/>
+<route tag="W" title="W"/>
+<route tag="Z" title="Z"/>
+<route tag="1" title="1"/>
+<route tag="6" title="6"/>
+<route tag="7" title="7"/>
+<route tag="10" title="10"/>
+<route tag="12" title="12"/>
+<route tag="14" title="14"/>
+<route tag="18" title="18"/>
+<route tag="19" title="19 Downtown Oakland - Fruitvale Bart" shortTitle="19"/>
+<route tag="20" title="20"/>
+<route tag="21" title="21"/>
+<route tag="22" title="22"/>
+<route tag="29" title="29 Emeryville/West Oakland Bart/Lakeshore" shortTitle="29"/>
+<route tag="32" title="32"/>
+<route tag="33" title="33 Montclair\ Highland" shortTitle="33"/>
+<route tag="36" title="36 West Oakland Bart/ Bancroft/Berkeley" shortTitle="36"/>
+<route tag="37" title="37"/>
+<route tag="39" title="39"/>
+<route tag="40" title="40"/>
+<route tag="45" title="45"/>
+<route tag="46" title="46"/>
+<route tag="46L" title="46L"/>
+<route tag="47" title="47"/>
+<route tag="48" title="48"/>
+<route tag="51A" title="51A"/>
+<route tag="51B" title="51B"/>
+<route tag="52" title="52"/>
+<route tag="54" title="54"/>
+<route tag="57" title="57"/>
+<route tag="60" title="60"/>
+<route tag="62" title="62"/>
+<route tag="65" title="65"/>
+<route tag="67" title="67"/>
+<route tag="70" title="70"/>
+<route tag="71" title="71"/>
+<route tag="72" title="72"/>
+<route tag="72M" title="72M"/>
+<route tag="72R" title="72R"/>
+<route tag="73" title="73"/>
+<route tag="74" title="74"/>
+<route tag="75" title="75"/>
+<route tag="76" title="76"/>
+<route tag="79" title="79 Rockridge/Berkeley/El Cerrito Bart" shortTitle="79"/>
+<route tag="80" title="80 Claremont/El Cerrito Bart" shortTitle="80"/>
+<route tag="81" title="81 Claremont/Berkeley/Amtrak/Berk.Marina" shortTitle="81"/>
+<route tag="83" title="83"/>
+<route tag="85" title="85"/>
+<route tag="86" title="86"/>
+<route tag="88" title="88"/>
+<route tag="89" title="89"/>
+<route tag="90" title="90"/>
+<route tag="93" title="93"/>
+<route tag="94" title="94"/>
+<route tag="95" title="95"/>
+<route tag="96" title="96 Fruitvale Montana/ Alameda Point" shortTitle="96"/>
+<route tag="97" title="97"/>
+<route tag="98" title="98"/>
+<route tag="99" title="99"/>
+<route tag="200" title="200"/>
+<route tag="210" title="210"/>
+<route tag="212" title="212"/>
+<route tag="215" title="215"/>
+<route tag="216" title="216"/>
+<route tag="217" title="217"/>
+<route tag="232" title="232"/>
+<route tag="239" title="239"/>
+<route tag="251" title="251"/>
+<route tag="314" title="314"/>
+<route tag="339" title="339"/>
+<route tag="356" title="356"/>
+<route tag="376" title="376"/>
+<route tag="386" title="386"/>
+<route tag="604" title="604"/>
+<route tag="605" title="605"/>
+<route tag="606" title="606"/>
+<route tag="607" title="607"/>
+<route tag="611" title="611 Diamond Dist./ Westlake M.S./ Piedmont" shortTitle="611"/>
+<route tag="617" title="617 Seminary Ave/ Skyline H.S." shortTitle="617"/>
+<route tag="620" title="620"/>
+<route tag="621" title="621"/>
+<route tag="623" title="623"/>
+<route tag="624" title="624"/>
+<route tag="625" title="625"/>
+<route tag="626" title="626"/>
+<route tag="628" title="628"/>
+<route tag="629" title="629"/>
+<route tag="631" title="631"/>
+<route tag="638" title="638"/>
+<route tag="642" title="642"/>
+<route tag="646" title="646"/>
+<route tag="648" title="648"/>
+<route tag="649" title="649"/>
+<route tag="650" title="650"/>
+<route tag="652" title="652"/>
+<route tag="653" title="653"/>
+<route tag="654" title="654"/>
+<route tag="655" title="655"/>
+<route tag="657" title="657"/>
+<route tag="658" title="658"/>
+<route tag="660" title="660"/>
+<route tag="662" title="662"/>
+<route tag="663" title="663"/>
+<route tag="667" title="667"/>
+<route tag="668" title="668"/>
+<route tag="669" title="669"/>
+<route tag="671" title="671"/>
+<route tag="672" title="672"/>
+<route tag="675" title="675"/>
+<route tag="676" title="676"/>
+<route tag="677" title="677"/>
+<route tag="679" title="679"/>
+<route tag="680" title="680"/>
+<route tag="681" title="681"/>
+<route tag="682" title="682"/>
+<route tag="684" title="684"/>
+<route tag="687" title="687"/>
+<route tag="688" title="688"/>
+<route tag="696" title="696"/>
+<route tag="800" title="800"/>
+<route tag="801" title="801"/>
+<route tag="802" title="802"/>
+<route tag="805" title="805"/>
+<route tag="840" title="840"/>
+<route tag="851" title="851"/>
+</body>

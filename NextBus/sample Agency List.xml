@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<body copyright="All data copyright agencies listed below and NextBus Inc 2017.">
+<agency tag="actransit" title="AC Transit" regionTitle="California-Northern"/>
+<agency tag="jhu-apl" title="APL" regionTitle="Maryland"/>
+<agency tag="art" title="Asheville Redefines Transit" regionTitle="North Carolina"/>
+<agency tag="atlanta-sc" title="Atlanta Streetcar - Beta" regionTitle="Georgia"/>
+<agency tag="brockton" title="Brockton Area Transit Authority" regionTitle="Massachusetts"/>
+<agency tag="camarillo" title="Camarillo Area (CAT)" shortTitle="Camarillo (CAT)" regionTitle="California-Southern"/>
+<agency tag="ccrta" title="Cape Cod Regional Transit Authority" shortTitle="CCRTA" regionTitle="Massachusetts"/>
+<agency tag="chapel-hill" title="Chapel Hill Transit" shortTitle="Chapel Hill" regionTitle="North Carolina"/>
+<agency tag="charm-city" title="Charm City Circulator" regionTitle="Maryland"/>
+<agency tag="ccny" title="City College NYC" regionTitle="New York"/>
+<agency tag="oxford-ms" title="City of Oxford" regionTitle="Mississippi"/>
+<agency tag="west-hollywood" title="City of West Hollywood" regionTitle="California-Southern"/>
+<agency tag="configdev" title="Config Stuff" regionTitle="Other"/>
+<agency tag="cyride" title="CyRide" regionTitle="Iowa"/>
+<agency tag="dc-circulator" title="DC Circulator" regionTitle="District of Columbia"/>
+<agency tag="dc-streetcar" title="DC Streetcar" regionTitle="District of Columbia"/>
+<agency tag="da" title="Downtown Connection" regionTitle="New York"/>
+<agency tag="dta" title="Downtown Connection" regionTitle="New York"/>
+<agency tag="dumbarton" title="Dumbarton Express" shortTitle="Dumbarton Exp" regionTitle="California-Northern"/>
+<agency tag="charles-river" title="EZRide - Charles River TMA" shortTitle="Charles River EZRide" regionTitle="Massachusetts"/>
+<agency tag="ecu" title="East Carolina University" regionTitle="North Carolina"/>
+<agency tag="escalon" title="Escalon eTrans" shortTitle="eTrans" regionTitle="California-Northern"/>
+<agency tag="fairfax" title="Fairfax (CUE)" regionTitle="Virginia"/>
+<agency tag="foothill" title="Foothill Transit" regionTitle="California-Southern"/>
+<agency tag="ft-worth" title="Fort Worth The T" regionTitle="Texas"/>
+<agency tag="glendale" title="Glendale Beeline" regionTitle="California-Southern"/>
+<agency tag="south-coast" title="Gold Coast Transit" regionTitle="California-Southern"/>
+<agency tag="indianapolis-air" title="Indianapolis International Airport" regionTitle="Indiana"/>
+<agency tag="jtafla" title="Jacksonville Transportation Authority" shortTitle="Jacksonville" regionTitle="Florida"/>
+<agency tag="lga" title="LaGuardia Airport Shuttle" regionTitle="New York"/>
+<agency tag="lametro" title="Los Angeles Metro" regionTitle="California-Southern"/>
+<agency tag="lametro-rail" title="Los Angeles Rail" regionTitle="California-Southern"/>
+<agency tag="mbta" title="MBTA" regionTitle="Massachusetts"/>
+<agency tag="mit" title="Massachusetts Institute of Technology" shortTitle="MIT" regionTitle="Massachusetts"/>
+<agency tag="moorpark" title="Moorpark Transit" regionTitle="California-Southern"/>
+<agency tag="predmove-benchmarking" title="Move to ttc-pred-3 benchmarking" regionTitle="Other"/>
+<agency tag="nova-se" title="Nova Southeastern University" shortTitle="Nova" regionTitle="Florida"/>
+<agency tag="omnitrans" title="Omnitrans" regionTitle="California-Southern"/>
+<agency tag="pvpta" title="Palos Verdes Transit" regionTitle="California-Southern"/>
+<agency tag="sria" title="Pensacola Beach (SRIA)" shortTitle="SRIA" regionTitle="Florida"/>
+<agency tag="psu" title="Plymouth State University" regionTitle="New Hampshire"/>
+<agency tag="portland-sc" title="Portland Streetcar" regionTitle="Oregon"/>
+<agency tag="pgc" title="Prince Georges County" regionTitle="Maryland"/>
+<agency tag="reno" title="RTC RIDE, Reno" regionTitle="Nevada"/>
+<agency tag="radford" title="Radford Transit" regionTitle="Virginia"/>
+<agency tag="roosevelt" title="Roosevelt Island" regionTitle="New York"/>
+<agency tag="rutgers-newark" title="Rutgers Univ. Newark College Town Shuttle" shortTitle="Rutgers Newark Shuttle" regionTitle="New Jersey"/>
+<agency tag="rutgers" title="Rutgers University" shortTitle="Rutgers" regionTitle="New Jersey"/>
+<agency tag="septa" title="SEPTA" regionTitle="Pennsylvania"/>
+<agency tag="sf-muni" title="San Francisco Muni" shortTitle="SF Muni" regionTitle="California-Northern"/>
+<agency tag="seattle-sc" title="Seattle Streetcar" regionTitle="Washington"/>
+<agency tag="simi-valley" title="Simi Valley (SVT)" regionTitle="California-Southern"/>
+<agency tag="stl" title="Societe de transport de Laval" shortTitle="Laval" regionTitle="Quebec"/>
+<agency tag="sct" title="Sonoma County Transit" regionTitle="California-Northern"/>
+<agency tag="thousand-oaks" title="Thousand Oaks Transit (TOT)" shortTitle="Thousand Oaks Transit" regionTitle="California-Southern"/>
+<agency tag="ttc" title="Toronto Transit Commission" shortTitle="Toronto TTC" regionTitle="Ontario"/>
+<agency tag="unitrans" title="Unitrans ASUCD/City of Davis" shortTitle="Unitrans" regionTitle="California-Northern"/>
+<agency tag="ucsf" title="University of California San Francisco" regionTitle="California-Northern"/>
+<agency tag="umd" title="University of Maryland" regionTitle="Maryland"/>
+<agency tag="vista" title="Ventura Intercity (VCTC)" shortTitle="Ventura (VCTC)" regionTitle="California-Southern"/>
+<agency tag="wku" title="Western Kentucky University" regionTitle="Kentucky"/>
+<agency tag="winston-salem" title="Winston-Salem" regionTitle="North Carolina"/>
+<agency tag="york-pa" title="York College" regionTitle="Pennsylvania"/>
+</body>

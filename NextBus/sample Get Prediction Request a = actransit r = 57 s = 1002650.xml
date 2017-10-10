@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<body copyright="All data copyright AC Transit 2017.">
+<predictions agencyTitle="AC Transit" routeTitle="57" routeTag="57" stopTitle="40th St &amp; Telegraph Av" stopTag="1002650">
+  <direction title="Foothill Square">
+  <prediction epochTime="1507660475171" seconds="816" minutes="13" isDeparture="false" dirTag="57_26_0" vehicle="2047" block="57009" tripTag="5572475" />
+  <prediction epochTime="1507661372820" seconds="1714" minutes="28" isDeparture="false" affectedByLayover="true" dirTag="57_26_0" vehicle="2216" block="57002" tripTag="5572381" />
+  <prediction epochTime="1507662272820" seconds="2614" minutes="43" isDeparture="false" affectedByLayover="true" dirTag="57_26_0" vehicle="2221" block="57010" tripTag="5572488" />
+  <prediction epochTime="1507663172820" seconds="3514" minutes="58" isDeparture="false" affectedByLayover="true" dirTag="57_26_0" vehicle="1454" block="57005" tripTag="5572407" />
+  <prediction epochTime="1507664072820" seconds="4414" minutes="73" isDeparture="false" affectedByLayover="true" dirTag="57_26_0" vehicle="1458" block="57006" tripTag="5572436" />
+  </direction>
+</predictions>
+</body>
