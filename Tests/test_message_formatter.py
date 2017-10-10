@@ -14,6 +14,7 @@ class MessageFormatterTest(unittest.TestCase):
       print('\nTesting format without response')
       slack_response = formatter.format(None)
       print(slack_response, '\n')
+      r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
       self.assertIsNotNone(slack_response)
 
     def test_bart(self):
