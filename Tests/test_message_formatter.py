@@ -1,7 +1,12 @@
 import unittest
+import requests
+import json
 import Slackbot
 from Slackbot import *
 from Slackbot.intent_responder import BARTQueryResponse, BusQueryResponse
+
+webhook_url = 'https://hooks.slack.com/services/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'
+headers = { 'Content-type': 'application/json' }
 
 class MessageFormatterTest(unittest.TestCase):
     def test(self):
@@ -9,6 +14,7 @@ class MessageFormatterTest(unittest.TestCase):
       print('\nTesting format without response')
       slack_response = formatter.format(None)
       print(slack_response, '\n')
+      r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
       self.assertIsNotNone(slack_response)
 
     def test_bart(self):
@@ -38,6 +44,7 @@ class MessageFormatterTest(unittest.TestCase):
 
       slack_response = formatter.format(bart_response)
       print(slack_response, '\n')
+      r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
       self.assertIsNotNone(slack_response)
 
     def test_bus(self):
@@ -56,6 +63,7 @@ class MessageFormatterTest(unittest.TestCase):
       }
       slack_response = formatter.format(bus_response)
       print(slack_response, '\n')
+      r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
       self.assertIsNotNone(slack_response)
 
 if __name__ == '__main__':
