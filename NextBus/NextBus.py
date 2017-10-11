@@ -62,6 +62,8 @@ class NextBusAPI(object):
         self.routeListFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %self.agencyTag)
         self.routeList = ET.parse(self.routeListFeed)
 
+        print("getRouteList url request: ", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %self.agencyTag)
+
         #Get dictionary of route tag: route title
         self.routeListRoot = self.routeList.getroot()
         self.routeDictionary = {}
@@ -78,34 +80,54 @@ class NextBusAPI(object):
         self.routeConfigFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(self.agencyTag, self.routeTag))
         self.routeConfig = ET.parse(self.routeConfigFeed)
 
+        print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(self.agencyTag, self.routeTag))
+
         #Creates a dictionary for the given route w/ stop titles as keys and stop tags as values
+        #Need to be able to find all stop tags associated with a certain stop title.
+        """
         self.stopsDictionary = {}
         self.routeConfigRoot = self.routeConfig.getroot()
         for child in self.routeConfigRoot:
             for stop in child:
                 self.stopsDictionary.update({stop.get('title'):stop.get('tag')})
+        print('Stops dictionary: ', self.stopsDictionary)
+        """
+        self.routeConfigRoot = self.routeConfig.getroot()
+        self.stopsDictionaryByTag = {}
+        for route in self.routeConfigRoot:
+            for stop in route:
+                self.stopsDictionaryByTag.update({stop.get('tag'):stop.get('title')})
+
+        #print('Stops Dictionary by Tag:', self.stopsDictionaryByTag)
 
 
     def getPredictionRequest(self, agency, route, stop):
         """
         http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=<agency_tag>&r=<route tag>&s=<stop tag>
         Obtain predictions associated with a particular stop. There are two ways to specify the stop: 1) using a stopId or 2) by specifying the route and stop tags.​
+        Returns a list of bus departure times, with the first item being the route direction.
         """
-        print('URL fetched: ', 'http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=%s&r=%s&s=%s' %(agency, route, stop))
+        print('getPredictionRequest url: ', 'http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=%s&r=%s&s=%s' %(agency, route, stop))
         self.predictionRequestFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=%s&r=%s&s=%s' %(agency, route, stop))
         self.predictionRequest = ET.parse(self.predictionRequestFeed)
 
-        self.busDepartureTimes = []
+        busDepartureTimes = {}
         self.predictionRequestRoot = self.predictionRequest.getroot()
         for predictions in self.predictionRequestRoot:
             for direction in predictions:
+                timeList = []
                 for prediction in direction:
                     #print(prediction.items())
-                    self.busDepartureTimes.append(prediction.get('minutes'))
+                    timeList.append(prediction.get('minutes'))
+                busDepartureTimes[direction.get('title')]= timeList
+
+        return busDepartureTimes
 
 
-    def BartRoutesResponse(self, routeInput, stopInput, directionInput):
-        """Takes stop, route, and direction as input. Returns estimated departure time in minutes."""
+    def BartRoutesResponse(self, routeInput, stopInput, directionInput = None):
+        """Takes stop, route, and optionally direction as input.
+        Returns a dictionary with all keys of stop titles and elements of list of estimated upcoming departure times in minutes.
+        If direction is specified, returns a dictionary with only the specified direction and its estimated upcoming departure times."""
         self.routeInput = routeInput
         self.stopInput = stopInput
         self.directionInput = directionInput
@@ -117,18 +139,30 @@ class NextBusAPI(object):
         self.routeTag = self.routeDictionary[self.routeInput]
         print('Route Input:', self.routeInput, 'Route Tag:', self.routeTag)
 
-        #From stop title, find stop tag
+        #From stop title, find stop tags
         self.getRouteConfig(self.agencyTag, self.routeTag)
-        #self.stopsDictionary will be defined, with stop title:stop tag
-        self.stopTag = self.stopsDictionary[self.stopInput]
-        print('Stop Input:', self.stopInput, 'Stop Tag:', self.stopTag)
 
+        #Check stopsDictionaryByTag for all instances of the stop title, and fetch the associated tags
+        self.stopTags = []
+        for tag in self.stopsDictionaryByTag:
+            if self.stopsDictionaryByTag[tag] == self.stopInput:
+                self.stopTags.append(tag)
 
+        print('Stop Input:', self.stopInput, 'Stop Tags:', self.stopTags)
+
+        allDepartureTimes = {}
         #Make prediction request
-        self.getPredictionRequest(self.agencyTag, self.routeTag, self.stopTag)
-        #self.busDepartureTimes will be defined
-        print(self.busDepartureTimes)
+        for tag in self.stopTags:
+            allDepartureTimes.update(self.getPredictionRequest(self.agencyTag, self.routeTag, tag))
 
+
+        if directionInput:
+            filteredDepartureTimes = {self.directionInput:allDepartureTimes[self.directionInput]}
+            print(filteredDepartureTimes)
+            return filteredDepartureTimes
+
+        print(allDepartureTimes)
+        return(allDepartureTimes)
 
 
 
