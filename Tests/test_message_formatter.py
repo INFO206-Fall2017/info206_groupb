@@ -51,16 +51,28 @@ class MessageFormatterTest(unittest.TestCase):
       formatter = message_formatter.MessageFormatter()
       print('\nTesting format without BusQueryResponse')
       bus_response = BusQueryResponse()
-      bus_response.route = {
-        "origin": "Emeryville",
-        "route_name": "57",
-        "destination": "Macarthur and Maple",
-        "departures": [
-          "Leaving",
-          "2",
-          "18"
-        ]
-      }
+      bus_response.routes = [
+        {
+          "origin": "Macarthur Blvd & Grand Av",
+          "route_name": "B",
+          "direction": "Oakland",
+          "departures": [
+            "Leaving",
+            "2",
+            "18"
+          ]
+        },
+        {
+          "origin": "Macarthur Blvd & Grand Av",
+          "route_name": "B",
+          "destination": "San Francisco",
+          "departures": [
+            "3",
+            "11",
+            "17"
+          ]
+        }
+      ]
       slack_response = formatter.format(bus_response)
       print(slack_response, '\n')
       r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
