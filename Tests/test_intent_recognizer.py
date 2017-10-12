@@ -1,3 +1,7 @@
+import sys
+print(sys.path[0])
+sys.path.append(sys.path[0] + '/Slackbot')  
+
 import unittest
 from Slackbot import *
 from Slackbot.intent_recognizer import IntentRecognizer, BARTQueryIntent, BusQueryIntent, HelpIntent
