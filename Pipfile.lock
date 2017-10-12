@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "98cbe7b1c61f15e8a3b750e0f14bfefb6fbfb485232e426d28405344a1c03eda"
+            "sha256": "75d45150a6b619b1c402c3ee377699e34acde35a9cfb52b94ce4342f01810a5d"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -60,6 +60,12 @@
                 "sha256:27fa6617efc2869d3e969a3e75ec060375bfb28831ade8b5cdd68da3a741dc3c"
             ],
             "version": "==3.2.3"
+        },
+        "pywit": {
+            "hashes": [
+                "sha256:5c9b726535fdebab184cd5eb9ae8e3064f8e417f2363e9037e8a9ef1a0ad2733"
+            ],
+            "version": "==0.4.0"
         },
         "requests": {
             "hashes": [

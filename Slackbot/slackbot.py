@@ -1,9 +1,13 @@
 import os
 import time
+import json
 from slackclient import SlackClient
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from minimal_http_server import MinimalHTTPRequestHandler
 from threading import Thread
+from intent_recognizer import IntentRecognizer
+from intent_responder import IntentResponder
+from message_formatter import MessageFormatter
 
 # starterbot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
@@ -14,8 +18,13 @@ EXAMPLE_COMMAND = "do"
 
 # instantiate Slack & Twilio clients
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
-
 PORT = int(os.environ.get("PORT", "8080"))
+
+irec = IntentRecognizer()
+ires = IntentResponder()
+mf = MessageFormatter()
+
+debug_on = True
 
 def handle_command(command, channel):
     """
@@ -23,12 +32,27 @@ def handle_command(command, channel):
         are valid commands. If so, then acts on the commands. If not,
         returns back what it needs for clarification.
     """
-    response = "Not sure what you mean. Use the *" + EXAMPLE_COMMAND + \
-               "* command with numbers, delimited by spaces."
-    if command.startswith(EXAMPLE_COMMAND):
-        response = "Sure...write some more code then I can do that!"
-    slack_client.api_call("chat.postMessage", channel=channel,
-                          text=response, as_user=True)
+    intent = irec.recognize(command)
+    
+    if debug_on:
+        slack_client.api_call("chat.postMessage", 
+                            channel=channel,
+                            text="Found intent: " + json.dumps(intent.__dict__),
+                            as_user=True)
+
+    response = ires.respond_to_intent(intent)
+
+    if debug_on:
+        slack_client.api_call("chat.postMessage", 
+                            channel=channel,
+                            text="Response: " + json.dumps(response.__dict__),
+                            as_user=True)
+
+    slack_response = mf.format(response)
+    slack_client.api_call("chat.postMessage", 
+                            channel=channel,
+                            attachments=slack_response["attachments"],
+                            as_user=True)
 
 
 def parse_slack_output(slack_rtm_output):
