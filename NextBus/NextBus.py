@@ -1,6 +1,6 @@
 import urllib.request
 import xml.etree.ElementTree as ET
-import
+import re
 #https://docs.python.org/3.0/library/urllib.request.html
 #https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.XMLPullParser
 
@@ -139,7 +139,8 @@ class NextBusAPI(object):
 
         #Clean up user's input so it matches something in stop tags
         #Should fix so that '40 and telegraph' matches 'Telegraph Av & 40th St'
-        
+        #Need to break input down into key elements, break stop dictionary titles down into key elements, and see where we get a match.
+
 
         #Check stopsDictionaryByTag for all instances of the stop title, and fetch the associated tags
         stopTags = []
