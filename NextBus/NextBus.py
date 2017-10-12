@@ -1,6 +1,6 @@
 import urllib.request
 import xml.etree.ElementTree as ET
-import time
+import
 #https://docs.python.org/3.0/library/urllib.request.html
 #https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.XMLPullParser
 
@@ -8,7 +8,7 @@ class NextBusAPI(object):
     """
     Inputs:
         Stop (mandatory), e.g. "MacArthur Blvd & 66th Av"
-        Route (optional), e.g. "57"
+        Route (mandatory), e.g. "57"
         Direction (optional), e.g. "Emeryville"
 
     Outputs:
@@ -85,25 +85,15 @@ class NextBusAPI(object):
 
         print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
 
-        #Creates a dictionary for the given route w/ stop titles as keys and stop tags as values
-        #Need to be able to find all stop tags associated with a certain stop title.
-        """
-        self.stopsDictionary = {}
-        self.routeConfigRoot = self.routeConfig.getroot()
-        for child in self.routeConfigRoot:
-            for stop in child:
-                self.stopsDictionary.update({stop.get('title'):stop.get('tag')})
-        print('Stops dictionary: ', self.stopsDictionary)
-        """
-        routeConfigRoot = routeConfig.getroot()
+        #Create a dictionary with stop tags:stop titles.
         stopsDictionaryByTag = {}
+        routeConfigRoot = routeConfig.getroot()
         for route in routeConfigRoot:
             for stop in route:
                 stopsDictionaryByTag.update({stop.get('tag'):stop.get('title')})
 
-        return stopsDictionaryByTag
-
         #print('Stops Dictionary by Tag:', self.stopsDictionaryByTag)
+        return stopsDictionaryByTag
 
 
     def getPredictionRequest(self, agency, route, stop):
@@ -129,23 +119,27 @@ class NextBusAPI(object):
         return busDepartureTimes
 
 
+
+
     def BartRoutesResponse(self, routeInput, stopInput, directionInput = None):
         """Takes stop, route, and optionally direction as input.
-        Returns a dictionary with all keys of stop titles and elements of list of estimated upcoming departure times in minutes.
-        If direction is specified, returns a dictionary with only the specified direction and its estimated upcoming departure times."""
-        routeInput = routeInput
-        stopInput = stopInput
-        directionInput = directionInput
-        #self.agencyTag = 'actransit' already, from initiation
+        Returns a dictionary with destinations as keys and a list of upcoming departure times as values."""
+
 
         #From route title, find route tag
         routeDictionary = self.getRouteList(self.agencyTag)
         #route dictionary will be defined, with title:tag
+
+
         routeTag = routeDictionary[routeInput]
         print('Route Input:', routeInput, 'Route Tag:', routeTag)
 
         #From stop title, find stop tags
         stopsDictionaryByTag = self.getRouteConfig(self.agencyTag, routeTag)
+
+        #Clean up user's input so it matches something in stop tags
+        #Should fix so that '40 and telegraph' matches 'Telegraph Av & 40th St'
+        
 
         #Check stopsDictionaryByTag for all instances of the stop title, and fetch the associated tags
         stopTags = []
@@ -165,6 +159,10 @@ class NextBusAPI(object):
         if directionInput:
             departureTimes = {directionInput:departureTimes[directionInput]}
 
+        print(departureTimes)
+        return departureTimes
+
+        """
         #make string of 'Destination1: time1 min, time2 min, time3 min\nDestination2: time min, time2 min, time3 min'
         departureStatement = "Upcoming departures of the %s line from %s:" %(routeInput, stopInput)
 
@@ -176,11 +174,10 @@ class NextBusAPI(object):
             if departureStatement[-1] == ',':
                 departureStatement = departureStatement[0:len(departureStatement) -1]
 
-
+        print(departureTimes)
         print(departureStatement)
         return(departureStatement)
-
-
+        """
 
 
 if __name__ == '__main__':
