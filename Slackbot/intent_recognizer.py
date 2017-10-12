@@ -8,28 +8,39 @@ class Intent:
 
 class BARTQueryIntent(Intent):
   def __init__(self, dictionary = None):
-    stops = dictionary.get("entities", {}).get("stop")
-    if stops is not None:
-      if len(stops) > 1:
-        self.origin = stops[0].get("value")
-        self.destination = stops[1].get("value")
-      elif len(stops) > 0:
-        self.origin = stops[0].get("value")
+    entities = dictionary.get("entities", {})
+    stops = entities.get("stop", [])
+    origins = entities.get("origin", [])
+    destinations = entities.get("destination", [])
+
+    if len(origins) > 0 and len(destinations) > 0:
+      self.origin = origins[0].get("value")
+      self.destination = destinations[1].get("value")
+    elif len(stops) > 1:
+      self.origin = stops[0].get("value")
+      self.destination = stops[1].get("value")
+    elif len(stops) > 0:
+      self.origin = stops[0].get("value")
 
 class BusQueryIntent(Intent):
   def __init__(self, dictionary = None):
-    stops = dictionary.get("entities", {}).get("stop")
-    routes = dictionary.get("entities", {}).get("bus_route")
-    if stops is not None:
-      if len(stops) > 1:
-        self.origin = stops[0].get("value")
-        self.destination = stops[1].get("value")
-      elif len(stops) > 0:
-        self.origin = stops[0].get("value")
+    entities = dictionary.get("entities", {})
+    stops = entities.get("stop", [])
+    routes = entities.get("bus_route", [])
+    origins = entities.get("origin", [])
+    destinations = entities.get("destination", [])
 
-    if routes is not None:
-      if len(routes) > 1:
-        self.route = routes[0].get("value")
+    if len(origins) > 0 and len(destinations) > 0:
+      self.origin = origins[0].get("value")
+      self.destination = destinations[0].get("value")
+    if len(stops) > 1:
+      self.origin = stops[0].get("value")
+      self.destination = stops[1].get("value")
+    elif len(stops) > 0:
+      self.origin = stops[0].get("value")
+
+    if len(routes) > 0:
+      self.route = routes[0].get("value")
 
 class HelpIntent(Intent):
   def __init__(self):
