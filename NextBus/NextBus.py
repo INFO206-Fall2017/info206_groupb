@@ -62,13 +62,16 @@ class NextBusAPI(object):
         routeListFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
         routeList = ET.parse(routeListFeed)
 
-        print("getRouteList url request: ", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
+        #print("getRouteList url request: ", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
 
         #Get dictionary of route tag: route title
         routeListRoot = routeList.getroot()
         routeDictionary = {}
         for child in routeListRoot:
-            routeDictionary.update({child.get('title'):child.get('tag')})
+            if child.get('shortTitle'):
+                routeDictionary.update({child.get('shortTitle'):child.get('tag')})
+            else:
+                routeDictionary.update({child.get('title'):child.get('tag')})
 
         return routeDictionary
 
@@ -83,7 +86,7 @@ class NextBusAPI(object):
         routeConfigFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
         routeConfig = ET.parse(routeConfigFeed)
 
-        print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
+        #print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
 
         #Create a dictionary with stop tags:stop titles.
         stopsDictionaryByTag = {}
@@ -130,25 +133,50 @@ class NextBusAPI(object):
         routeDictionary = self.getRouteList(self.agencyTag)
         #route dictionary will be defined, with title:tag
 
-
         routeTag = routeDictionary[routeInput]
-        print('Route Input:', routeInput, 'Route Tag:', routeTag)
+        #print('Route Input:', routeInput, 'Route Tag:', routeTag)
 
         #From stop title, find stop tags
         stopsDictionaryByTag = self.getRouteConfig(self.agencyTag, routeTag)
 
+
         #Clean up user's input so it matches something in stop tags
-        #Should fix so that '40 and telegraph' matches 'Telegraph Av & 40th St'
+        #Should fix so that '40th and telegraph' matches 'Telegraph Av & 40th St'
         #Need to break input down into key elements, break stop dictionary titles down into key elements, and see where we get a match.
 
+        #First, break user's input down into individual lowercase words
+        stopInputBreakdown = stopInput.lower().split()
+        #Then remove generic terms
+        genericTerms = ['&', 'and', '(', ')', 'blvd', 'ter', 'terrace', 'dr', 'drive',
+        'rd', 'road', 'st', 'street', 'av', 'avenue', 'ln', 'lane', 'pl', 'place',
+        'wy', 'way', 'ct', 'court']
+        for term in genericTerms:
+            while term in stopInputBreakdown:
+                stopInputBreakdown.remove(term)
+        #Then sort the list
+        stopInputBreakdown.sort()
+        # print('Stop input breakdown: ', stopInputBreakdown)
 
-        #Check stopsDictionaryByTag for all instances of the stop title, and fetch the associated tags
+        #Then do the same for the dictionary:
+        for tag in stopsDictionaryByTag:
+            stopsDictionaryByTag[tag] = str(stopsDictionaryByTag[tag]).lower().split()
+            for term in genericTerms:
+                while term in stopsDictionaryByTag[tag]:
+                    stopsDictionaryByTag[tag].remove(term)
+            stopsDictionaryByTag[tag].sort()
+            #print(stopsDictionaryByTag[tag])
+
+        #Finally, make sure all of the unique elements of the input are in the stop dictionary:
         stopTags = []
         for tag in stopsDictionaryByTag:
-            if stopsDictionaryByTag[tag] == stopInput:
+            match = True
+            for entry in stopInputBreakdown:
+                if entry not in stopsDictionaryByTag[tag]:
+                    match = False
+            if match:
                 stopTags.append(tag)
 
-        print('Stop Input:', stopInput, 'Stop Tags:', stopTags)
+        # print('Stop Input:' + stopInput + ', Stop Tags:', stopTags)
 
         #Make prediction request, assign to dictionary
         departureTimes = {}
@@ -221,5 +249,11 @@ if __name__ == '__main__':
 
     #Test: BARTRoutesResponse
     # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57", directionInput = "Foothill Square" )
-    NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57")
+    # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57")
+    NextBus.BartRoutesResponse(stopInput = " telegraph 40th", routeInput = "57", directionInput = 'Foothill Square')
+    # NextBus.BartRoutesResponse(stopInput = "dana and durant", routeInput = "6")
+    # NextBus.BartRoutesResponse(stopInput = "broadway and 12th", routeInput = "6")
+    # NextBus.BartRoutesResponse(stopInput = "keller and greenridge", routeInput = "650")
+    # NextBus.BartRoutesResponse(stopInput = 'dana and durant', routeInput = '6')
+
     # pass
