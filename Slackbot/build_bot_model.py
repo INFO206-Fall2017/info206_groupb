@@ -77,6 +77,7 @@ def update_bart_stop_entity():
 
   print(stop_values)
   for stn in stop_values:
+    print(stn)
     r = requests.post('https://api.wit.ai/entities/stop/values?v=20171010', data=json.dumps(stn), headers=headers)
     print(r.json())
 

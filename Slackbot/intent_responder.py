@@ -28,24 +28,25 @@ class IntentResponder:
       return HelpIntent()
 
   def respond_to_bart_intent(self, intent):
+    # TODO: check if there's destination specified
     etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin,
                                             destination_station_name=intent.destination)
     response = BARTQueryResponse()
-    route = {
-      "origin": intent.origin,
-      "destination": intent.destination,
-      "departures": etd_dict
-    }
-    response.routes = [route]
+    response.routes = [{ 
+      "origin": intent.origin, 
+      "destination": dest,
+      "departures": departures
+    } for dest, departures in etd_dict.items()]
     return response
 
   def respond_to_bus_intent(self, intent):
-    ret = self.next_bus_api.BartRoutesResponse(stopInput=intent.origin, 
-                                          routeInput=intent.route, 
-                                          directionInput=intent.destination)
-    print(ret)
+    # TODO: Fix case sensitivity
+    origin = intent.origin.replace("&amp;", "&")
+    etd_dict = self.next_bus_api.BartRoutesResponse(stopInput=origin, routeInput=intent.route)
     response = BusQueryResponse()
-
-    # TODO: access you intent params here, for example, intent.origin
-    # TODO: add attributes yto your response, for example response.route, response.departures
+    response.routes = [{
+      "origin": intent.origin, 
+      "direction": direction,
+      "departures": departures
+    } for direction, departures in etd_dict.items()]
     return response
