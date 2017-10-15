@@ -24,6 +24,7 @@ class MessageFormatter:
             timelist += ", "
     finaltimelist = timelist + " minutes"
 
+
     return {
         "attachments": [
             {
@@ -51,10 +52,17 @@ class MessageFormatter:
             timelist += ", "
     finaltimelist = timelist + " minutes"
 
+    # check if the direction key exists. If not, then we show destination as the title instead
+    if "direction" in response.routes[busindex]:
+        directionordestination = response.routes[busindex]["direction"]
+    else:
+        directionordestination = response.routes[busindex]["destination"]
+
+
     return {
         "attachments": [
             {
-                "title": "[Bus Destination or Direction]",
+                "title": directionordestination,
                 "color": "#F4D03F",
                 "pretext": "Latest Bus times for {}".format(response.routes[busindex]["origin"]),
                 "text": finaltimelist,
@@ -70,9 +78,10 @@ class MessageFormatter:
     return {
         "attachments": [
             {
-                #"title": "Proper message formatting",
+                "title": "A list of all stations can be found here.",
+                "title_link": "https://www.bart.gov/stations",
                 "color": "#E74C3C",
-                "pretext": "Proper message formatting is below",
+                "pretext": "I couldn't understand what you mean. Below is a link of all station names and the proper input formatting.",
                 "text": "[Bart or Bus] + [Station Name] + [Line of station or direction]",
                 "mrkdwn_in": [
                     "text",
