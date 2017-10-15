@@ -13,17 +13,25 @@ headers = { 'Content-type': 'application/json' }
 
 class MessageFormatterTest(unittest.TestCase):
     def test(self):
+      # creates a class called formatter from the message formatter script
       formatter = message_formatter.MessageFormatter()
       print('\nTesting format without response')
+      # calls the format method within the message formatter class
       slack_response = formatter.format(None)
+      # prints out the attachments 
       print(slack_response, '\n')
+      # send the HTTP request to slack
       r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
       self.assertIsNotNone(slack_response)
 
     def test_bart(self):
+      # creates a new instance of the message formatter class
       formatter = message_formatter.MessageFormatter()
+      # prints this message in the terminal
       print('\nTesting format without BARTQueryResponse')
+      # set the variable bus_response to the bartqueryresponse
       bart_response = BARTQueryResponse()
+      # here we set new values for the routes values
       bart_response.routes = [
         {
           "origin": "Downtown Berkeley",
@@ -45,8 +53,11 @@ class MessageFormatterTest(unittest.TestCase):
         }
       ]
 
+      # we set slack_response to the output of the format function 
       slack_response = formatter.format(bart_response)
+      # prints the the attachments within slack_response
       print(slack_response, '\n')
+      # tells slack to print out these values
       r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
       self.assertIsNotNone(slack_response)
 

@@ -12,12 +12,25 @@ class MessageFormatter:
     pass
 
   def formatBARTResponse(self, response): 
+
+    # this will create a string of all the times
+    # do this for every entry that is given
+    timelist =""
+    index = 0
+    for time in response.routes[0]["departures"]:
+        timelist += time
+        index += 1
+        if index != len(response.routes[0]["departures"]):
+            timelist += ", "
+    finaltimelist = timelist + " minutes"
+
     return {
         "attachments": [
             {
-                "title": "Title",
-                "pretext": "Pretext _supports_ mrkdwn",
-                "text": "Testing *right now!*",
+                "title": response.routes[0]["destination"],
+                "color": "#2ECC71",
+                "pretext": "Latest BART times for {}".format(response.routes[0]["origin"]),
+                "text": finaltimelist,
                 "mrkdwn_in": [
                     "text",
                     "pretext"
@@ -30,9 +43,10 @@ class MessageFormatter:
     return {
         "attachments": [
             {
-                "title": "Title",
-                "pretext": "Pretext _supports_ mrkdwn",
-                "text": "Testing *right now!*",
+                "title": "[Bus Line]",
+                "color": "#F4D03F",
+                "pretext": "Latest bus times for [station name]",
+                "text": "[time 1, time 2, time 3, minutes]",
                 "mrkdwn_in": [
                     "text",
                     "pretext"
@@ -45,9 +59,10 @@ class MessageFormatter:
     return {
         "attachments": [
             {
-                "title": "Title",
-                "pretext": "Pretext _supports_ mrkdwn",
-                "text": "Testing *right now!*",
+                #"title": "Proper message formatting",
+                "color": "#E74C3C",
+                "pretext": "Proper message formatting is below",
+                "text": "[Bart or Bus] + [Station Name] + [Line of station or direction]",
                 "mrkdwn_in": [
                     "text",
                     "pretext"
