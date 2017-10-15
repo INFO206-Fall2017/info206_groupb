@@ -53,13 +53,20 @@ class MessageFormatterTest(unittest.TestCase):
         }
       ]
 
-      # we set slack_response to the output of the format function 
-      slack_response = formatter.format(bart_response)
-      # prints the the attachments within slack_response
-      print(slack_response, '\n')
-      # tells slack to print out these values
-      r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
-      self.assertIsNotNone(slack_response)
+      # we will run this multiple times depending on the amount of routes given
+      # we will also add a new argument in the function so the function repeats as many times as needed
+      # we set slack_response to the output of the format function
+      #######
+      trainindex = 0
+      while trainindex < len(bart_response.routes):
+        slack_response = formatter.format(bart_response, trainindex)
+        # prints the the attachments within slack_response
+        print(slack_response, '\n')
+        # tells slack to print out these values
+        r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
+        #######
+        self.assertIsNotNone(slack_response)
+        trainindex += 1
 
     def test_bus(self):
       formatter = message_formatter.MessageFormatter()
