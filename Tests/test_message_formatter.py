@@ -17,7 +17,7 @@ class MessageFormatterTest(unittest.TestCase):
       formatter = message_formatter.MessageFormatter()
       print('\nTesting format without response')
       # calls the format method within the message formatter class
-      slack_response = formatter.format(None)
+      slack_response = formatter.format(None, None)
       # prints out the attachments 
       print(slack_response, '\n')
       # send the HTTP request to slack
@@ -72,6 +72,7 @@ class MessageFormatterTest(unittest.TestCase):
       formatter = message_formatter.MessageFormatter()
       print('\nTesting format without BusQueryResponse')
       bus_response = BusQueryResponse()
+      # we will need to check for direction AND destination
       bus_response.routes = [
         {
           "origin": "Macarthur Blvd & Grand Av",
@@ -94,10 +95,13 @@ class MessageFormatterTest(unittest.TestCase):
           ]
         }
       ]
-      slack_response = formatter.format(bus_response)
-      print(slack_response, '\n')
-      r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
-      self.assertIsNotNone(slack_response)
+      busindex = 0
+      while busindex < len(bus_response.routes):
+        slack_response = formatter.format(bus_response, busindex)
+        print(slack_response, '\n')
+        r = requests.post(webhook_url, data=json.dumps(slack_response), headers=headers)
+        self.assertIsNotNone(slack_response)
+        busindex += 1
 
 if __name__ == '__main__':
     unittest.main()

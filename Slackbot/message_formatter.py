@@ -2,11 +2,11 @@ from Slackbot import intent_responder
 from Slackbot.intent_responder import BARTQueryResponse, BusQueryResponse
 
 class MessageFormatter:
-  def format(self, response, trainindex):
+  def format(self, response, index):
     if type(response) is BARTQueryResponse:
-      return self.formatBARTResponse(response, trainindex)
+      return self.formatBARTResponse(response, index)
     elif type(response) is BusQueryResponse: 
-      return self.formatBusResponse(response)
+      return self.formatBusResponse(response, index)
     else:
       return self.formatHelpResponse()
     pass
@@ -39,14 +39,25 @@ class MessageFormatter:
         ]
     }
 
-  def formatBusResponse(self, response): 
+  def formatBusResponse(self, response, busindex): 
+    # this will create a string of all the times
+    # do this for every entry that is given
+    timelist =""
+    index = 0
+    for time in response.routes[busindex]["departures"]:
+        timelist += time
+        index += 1
+        if index != len(response.routes[busindex]["departures"]):
+            timelist += ", "
+    finaltimelist = timelist + " minutes"
+
     return {
         "attachments": [
             {
-                "title": "[Bus Line]",
+                "title": "[Bus Destination or Direction]",
                 "color": "#F4D03F",
-                "pretext": "Latest bus times for [station name]",
-                "text": "[time 1, time 2, time 3, minutes]",
+                "pretext": "Latest Bus times for {}".format(response.routes[busindex]["origin"]),
+                "text": finaltimelist,
                 "mrkdwn_in": [
                     "text",
                     "pretext"
