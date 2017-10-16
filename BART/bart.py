@@ -13,15 +13,22 @@ Input format:  BART    Station name
 This input search will display a list of time schedules for all BART line from the input BART
 station. For example the input BART Richmond will provide the user the time schedules for the next available BART for all lines such as Richmond, Daly City, Warm Springs/South Fremont, Fremont, Pleasanton/Dublin, Pittsburg/Bay Point.
 
+Option 3) Users can input name of 2 stations ( “Departing from”  and "arriving at" station)
+Input format:  BART    Station name1      Station name2
+This input search will display a the time schedule for a BART that can help users reach from BART station1 to BART station2.
+For example the input BART Richmond   Fremont will provide the user the time schedules for the next available BART from Richmond to Fremont
+
 '''
 
 
 def pretty_print_dict(any_dict=None):
     return json.dumps(any_dict, sort_keys=True, indent=4)
+    """This funcytion does nothing important - it displays the code in a more easy to read format"""
 
 
 def get_bart_json(page=""):
     response = requests.get(page)
+    """ sending and receiving requests"""
 
     # This raises a ValueError if status_code is not 200
     if response.status_code != 200:
@@ -40,13 +47,14 @@ class BartApi(object):
 
     def get_station_name_dict(self):
         '''
-            This can be used to find all stations and corresponding abbr (required for page request)
+            This function can be used/called to find all stations and corresponding abbr (required for page request)
         '''
         station_list_page = '%s/stn.aspx?cmd=stns&key=%s&json=y' % (
             BartApi.API_PREFIX, BartApi.API_KEY)
 
         bart_json = get_bart_json(page=station_list_page)
         payload_dict = json.loads(bart_json)
+
         # print(pretty_print_dict(payload_dict))
 
         '''
@@ -85,9 +93,11 @@ class BartApi(object):
                 name = 'warm springs'
 
             abbr = station_dict['abbr'].upper()
+            # converting to uppercase to make inputs case independent
 
             station_name_abbr_dict[name] = abbr
             station_abbr_name_dict[abbr] = name
+            # make a dict with abbr and name key value pair
 
         # print(station_name_abbr_dict, station_abbr_name_dict)
         return station_name_abbr_dict, station_abbr_name_dict
@@ -131,21 +141,25 @@ class BartApi(object):
             value_list = []
             for train in multiple_trains:
                 value_list.append(train['minutes'])
-                # makes a lsit of all approaching barts for different lines - 3-4 in numbers
+                # makes a list of all approaching barts for different lines - 3-4 in numbers
 
             destination_etd_dict[key] = value_list
+            # makes the value for key = etd['destination'].upper() equal to the lidts generated in the 'for' loop
 
         if not line_final_station_name:
             return destination_etd_dict
+            # provides an output for all lines from the input station incase there is no input for line
 
         if 'warm' in line_final_station_name.lower():
             line_final_station_name = 'warm springs'
+            # BART uses different name for the warm springs/fremont BART it some times call it only Warm springs while it calls it Warm Springs/Fremont in other cases. This takes care of both situation
 
         line_final_station_name = line_final_station_name.upper()
 
         if line_final_station_name not in destination_etd_dict:
             print("No such line final station found - %s" % (line_final_station_name))
             return destination_etd_dict
+            # returns an output that specifies the input is not correct - spelling mistake, non-existing stations
 
         destination_etd_line_dict = {}
         destination_etd_line_dict[line_final_station_name] = destination_etd_dict[line_final_station_name]

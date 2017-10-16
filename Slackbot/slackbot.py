@@ -24,7 +24,7 @@ irec = IntentRecognizer()
 ires = IntentResponder()
 mf = MessageFormatter()
 
-debug_on = True
+debug_on = False
 
 def handle_command(command, channel):
     """
@@ -55,10 +55,16 @@ def handle_command(command, channel):
                                 as_user=True)
 
         slack_response = mf.format(response)
-        slack_client.api_call("chat.postMessage", 
-                                channel=channel,
-                                attachments=slack_response["attachments"],
-                                as_user=True)
+        if 'attachments' in slack_response:
+            slack_client.api_call("chat.postMessage", 
+                                    channel=channel,
+                                    attachments=slack_response["attachments"],
+                                    as_user=True)
+        elif 'text' in slack_response:
+            slack_client.api_call("chat.postMessage", 
+                                    channel=channel,
+                                    text=slack_response["text"],
+                                    as_user=True)
 
 
 def parse_slack_output(slack_rtm_output):
