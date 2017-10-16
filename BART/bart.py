@@ -113,7 +113,7 @@ class BartApi(object):
         origin_station_name = origin_station_name.upper()
 
         if origin_station_name not in self.station_name_abbr_dict:
-            raise ValueError("No such origin station found - %s" % (origin_station_name))
+            raise ValueError(origin_station_name)
 
         origin_station_abbr = self.station_name_abbr_dict[origin_station_name]
 
@@ -179,7 +179,7 @@ class BartApi(object):
         destination_station_name = destination_station_name.upper()
 
         if origin_station_name not in self.station_name_abbr_dict:
-            raise ValueError("No such origin station found - %s" % (origin_station_name))
+            raise ValueError(origin_station_name)
         elif destination_station_name not in self.station_name_abbr_dict:
             print("No such destination station found - %s" % (destination_station_name))
             return self.get_estimated_times(origin_station_name=origin_station_name,
@@ -198,8 +198,7 @@ class BartApi(object):
             'schedule']['request']['trip'][0]['leg'][0]['@trainHeadStation']
         if first_leg_final_station_abbr not in self.station_abbr_name_dict:
             # print(pretty_print_dict(self.station_abbr_name_dict))
-            raise ValueError("No such station abbr found - %s" %
-                             (first_leg_final_station_abbr))
+            raise ValueError(first_leg_final_station_abbr)
 
         line_final_station_name = self.station_abbr_name_dict[first_leg_final_station_abbr]
 

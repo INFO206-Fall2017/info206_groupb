@@ -47,24 +47,32 @@ class IntentResponder:
 
       return response
     except ValueError as e: 
-      pass
+      if e is not None:
+        response = NamesNotFoundResponse()
+        response.names.append({ "name": e.args[0], "type": "route" })
+        return response
 
   def respond_to_bus_intent(self, intent):
-    # TODO: Fix case sensitivity
-    origin = intent.origin.replace("&amp;", "&")
-    etd_dict, route_found, stop_found = self.next_bus_api.BartRoutesResponse(stopInput=origin, routeInput=intent.route)
-    if (not route_found) or (not stop_found):
-      response = NamesNotFoundResponse()
-      if not stop_found:
-        response.names.append({ "name": intent.origin, "type": "stop" })
-      if not route_found:
-        response.names.append({ "name": intent.route, "type": "route" })
-        
-    else:
-      response = BusQueryResponse()
-      response.routes = [{
-        "origin": intent.origin, 
-        "direction": direction,
-        "departures": departures
-      } for direction, departures in etd_dict.items()]
-    return response
+    try: 
+      origin = intent.origin.replace("&amp;", "&")
+      etd_dict, route_found, stop_found = self.next_bus_api.BartRoutesResponse(stopInput=origin, routeInput=intent.route)
+      if (not route_found) or (not stop_found):
+        response = NamesNotFoundResponse()
+        if not stop_found:
+          response.names.append({ "name": intent.origin, "type": "stop" })
+        if not route_found:
+          response.names.append({ "name": intent.route, "type": "route" })
+          
+      else:
+        response = BusQueryResponse()
+        response.routes = [{
+          "origin": intent.origin, 
+          "direction": direction,
+          "departures": departures
+        } for direction, departures in etd_dict.items()]
+      return response
+    except KeyError as e:
+      if e is not None:
+        response = NamesNotFoundResponse()
+        response.names.append({ "name": e.args[0], "type": "route" })
+        return response
