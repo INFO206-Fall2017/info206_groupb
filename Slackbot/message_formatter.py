@@ -15,6 +15,8 @@ class MessageFormatter:
       return self.formatBusResponse(response)
     elif type(response).__name__ == 'NamesNotFoundResponse': 
       return self.formatNamesNotFoundResponse(response)
+    elif type(response).__name__ == 'NoDeparturesResponse':
+      return self.formatNoDeparturesResponse(response)
     else:
       return self.formatHelpResponse()
     pass
@@ -130,6 +132,11 @@ class MessageFormatter:
         names.append('"' + n["name"] + '"')
     return {
         "text": "I don't know what's " + ','.join(names)
+    }
+
+  def formatNoDeparturesResponse(self, response):
+    return {
+      "text": "There's currently no departures on that route from that station."
     }
 
   def formatHelpResponse(self):

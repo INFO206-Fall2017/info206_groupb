@@ -18,6 +18,10 @@ class NamesNotFoundResponse:
   def __init__(self, intent = None):
     self.names = []
 
+class NoDeparturesResponse:
+  def __init__(self, intent = None):
+    pass
+
 class IntentResponder: 
   def __init__(self):
     self.bart_api = BartApi()
@@ -38,14 +42,19 @@ class IntentResponder:
       else:
         etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin,
                                                 destination_station_name=intent.destination)
-      response = BARTQueryResponse()
-      response.routes = [{ 
-        "origin": intent.origin, 
-        "destination": dest,
-        "departures": departures
-      } for dest, departures in etd_dict.items()]
 
-      return response
+      if not etd_dict:
+        response = NoDeparturesResponse()
+        return response
+      else: 
+        response = BARTQueryResponse()
+        response.routes = [{ 
+          "origin": intent.origin, 
+          "destination": dest,
+          "departures": departures
+        } for dest, departures in etd_dict.items()]
+        return response
+
     except ValueError as e: 
       if e is not None:
         response = NamesNotFoundResponse()
@@ -62,7 +71,10 @@ class IntentResponder:
           response.names.append({ "name": intent.origin, "type": "stop" })
         if not route_found:
           response.names.append({ "name": intent.route, "type": "route" })
-          
+      elif not etd_dict:
+        response = NoDeparturesResponse()
+        return response
+
       else:
         response = BusQueryResponse()
         response.routes = [{
