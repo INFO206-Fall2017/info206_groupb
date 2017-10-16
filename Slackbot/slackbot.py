@@ -87,7 +87,7 @@ if __name__ == "__main__":
     thread = Thread(target = runHttp)
     thread.start()
     if slack_client.rtm_connect():
-        print("StarterBot connected and running!")
+        print("RTM connected and running!")
         while True:
             command, channel = parse_slack_output(slack_client.rtm_read())
             if command and channel:

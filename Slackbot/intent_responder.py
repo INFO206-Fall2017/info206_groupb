@@ -11,8 +11,12 @@ class BARTQueryResponse:
     self.routes = []
 
 class BusQueryResponse:
-  def __init__(self, init = None):
+  def __init__(self, intent = None):
     self.departures = []
+
+class NamesNotFoundResponse:
+  def __init__(self, intent = None):
+    self.names = []
 
 class IntentResponder: 
   def __init__(self):
@@ -33,7 +37,7 @@ class IntentResponder:
     else:
       etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin,
                                               destination_station_name=intent.destination)
-      
+
     response = BARTQueryResponse()
     response.routes = [{ 
       "origin": intent.origin, 
@@ -45,11 +49,19 @@ class IntentResponder:
   def respond_to_bus_intent(self, intent):
     # TODO: Fix case sensitivity
     origin = intent.origin.replace("&amp;", "&")
-    etd_dict = self.next_bus_api.BartRoutesResponse(stopInput=origin, routeInput=intent.route)
-    response = BusQueryResponse()
-    response.routes = [{
-      "origin": intent.origin, 
-      "direction": direction,
-      "departures": departures
-    } for direction, departures in etd_dict.items()]
+    etd_dict, route_found, stop_found = self.next_bus_api.BartRoutesResponse(stopInput=origin, routeInput=intent.route)
+    if (not route_found) or (not stop_found):
+      response = NamesNotFoundResponse()
+      if not stop_found:
+        response.names.append({ "name": intent.origin, "type": "stop" })
+      if not route_found:
+        response.names.append({ "name": intent.route, "type": "route" })
+        
+    else:
+      response = BusQueryResponse()
+      response.routes = [{
+        "origin": intent.origin, 
+        "direction": direction,
+        "departures": departures
+      } for direction, departures in etd_dict.items()]
     return response
