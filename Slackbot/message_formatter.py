@@ -2,6 +2,9 @@ from Slackbot import intent_responder
 from Slackbot.intent_responder import BARTQueryResponse as BARTQueryResponse
 from Slackbot.intent_responder import BusQueryResponse as BusQueryResponse
 
+# set up 4 colors to cycle through for each "time"
+colorlist = ["#F4D03F", "#3498DB", "#2ECC71", "#E74C3C"]
+
 class MessageFormatter:
   def format(self, response):
     if type(response).__name__ == 'BARTQueryResponse':
@@ -16,15 +19,17 @@ class MessageFormatter:
 
   def formatBARTResponse(self, response):
     list = []
+    colorcounter = 0
     for r in response.routes:
-        list.append(self.formatBARTResponseItem(r))
+        list.append(self.formatBARTResponseItem(r, colorcounter))
+        colorcounter += 1
 
     return {
         "attachments": list
     }
 
 
-  def formatBARTResponseItem(self, response): 
+  def formatBARTResponseItem(self, response, colorcounter): 
 
     # this will create a string of all the times
     # do this for every entry that is given
@@ -43,7 +48,7 @@ class MessageFormatter:
 
     return {
                 "title": response["destination"],
-                "color": "#2ECC71",
+                "color": colorlist[colorcounter%4],
                 "pretext": "Latest BART times for {}".format(response["origin"]),
                 "text": finaltimelist,
                 "mrkdwn_in": [
@@ -58,8 +63,10 @@ class MessageFormatter:
 
   def formatBusResponse(self, response):
     list = []
+    colorcounter = 0
     for r in response.routes:
-        list.append(self.formatBusResponseItem(r))
+        list.append(self.formatBusResponseItem(r, colorcounter))
+        colorcounter += 1
 
     return {
         "attachments": list
@@ -67,7 +74,7 @@ class MessageFormatter:
 
 
 
-  def formatBusResponseItem(self, response): 
+  def formatBusResponseItem(self, response, colorcounter): 
     # this will create a string of all the times
     # do this for every entry that is given
     timelist =""
@@ -90,7 +97,7 @@ class MessageFormatter:
 
     return {
                 "title": directionordestination,
-                "color": "#F4D03F",
+                "color": colorlist[colorcounter%4],
                 "pretext": "Latest Bus times for {}".format(response["origin"]),
                 "text": finaltimelist,
                 "mrkdwn_in": [
