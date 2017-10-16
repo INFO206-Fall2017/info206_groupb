@@ -78,6 +78,8 @@ class MessageFormatter:
         # trying to remove the pretext field if there is already more than 1 instance
         if colorcounter > 0:
             del item["pretext"]
+        if "Leaving" in item["text"]:
+            item["image_url"] = "https://media.giphy.com/media/oEoFTNBIsthzG/giphy.gif"
         list.append(item)
 
         colorcounter += 1
