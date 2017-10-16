@@ -3,7 +3,7 @@ from Slackbot.intent_responder import BARTQueryResponse as BARTQueryResponse
 from Slackbot.intent_responder import BusQueryResponse as BusQueryResponse
 
 # set up 4 colors to cycle through for each "time"
-colorlist = ["#F4D03F", "#3498DB", "#2ECC71", "#E74C3C"]
+colorlist = ["#F4D03F", "#3498DB", "#2ECC71", "#E74C3C", "#85C1E9"]
 
 class MessageFormatter:
   def format(self, response):
@@ -21,8 +21,15 @@ class MessageFormatter:
     list = []
     colorcounter = 0
     for r in response.routes:
-        list.append(self.formatBARTResponseItem(r, colorcounter))
+        item = self.formatBARTResponseItem(r, colorcounter)
+
+        # trying to remove the pretext field if there is already more than 1 instance
+        if colorcounter > 0:
+            del item["pretext"]
+        list.append(item)
+
         colorcounter += 1
+
 
     return {
         "attachments": list
@@ -37,18 +44,17 @@ class MessageFormatter:
     index = 0
     for time in response["departures"]:
         timelist += time
-
         # index is used here to not add a comma after the last numerical value
         index += 1
-
         if index != len(response["departures"]):
             timelist += ", "
-    finaltimelist = timelist + " minutes"
+
+    finaltimelist = timelist + " minutes"    
 
 
     return {
                 "title": response["destination"],
-                "color": colorlist[colorcounter%4],
+                "color": colorlist[colorcounter%5],
                 "pretext": "Latest BART times for {}".format(response["origin"]),
                 "text": finaltimelist,
                 "mrkdwn_in": [
@@ -65,7 +71,13 @@ class MessageFormatter:
     list = []
     colorcounter = 0
     for r in response.routes:
-        list.append(self.formatBusResponseItem(r, colorcounter))
+        item = self.formatBusResponseItem(r, colorcounter)
+
+        # trying to remove the pretext field if there is already more than 1 instance
+        if colorcounter > 0:
+            del item["pretext"]
+        list.append(item)
+
         colorcounter += 1
 
     return {
@@ -97,7 +109,7 @@ class MessageFormatter:
 
     return {
                 "title": directionordestination,
-                "color": colorlist[colorcounter%4],
+                "color": colorlist[colorcounter%5],
                 "pretext": "Latest Bus times for {}".format(response["origin"]),
                 "text": finaltimelist,
                 "mrkdwn_in": [
