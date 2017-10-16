@@ -1,6 +1,6 @@
 import urllib.request
 import xml.etree.ElementTree as ET
-import re
+import time
 #https://docs.python.org/3.0/library/urllib.request.html
 #https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.XMLPullParser
 
@@ -8,7 +8,7 @@ class NextBusAPI(object):
     """
     Inputs:
         Stop (mandatory), e.g. "MacArthur Blvd & 66th Av"
-        Route (mandatory), e.g. "57"
+        Route (optional), e.g. "57"
         Direction (optional), e.g. "Emeryville"
 
     Outputs:
@@ -43,6 +43,30 @@ class NextBusAPI(object):
         self.agencyTitle = 'AC Transit'
         self.regionTitle = 'California-Northern'
 
+        #On initiation, get a list of all stops
+        self.fullStopList = self.getAllStops(self.agencyTag)
+
+    def getAllStops(self, agency):
+        """Gets all stops for a given agency.
+        Writes a file containing dictionary of {stop title: [routes containing stop]}
+        """
+
+        #Get dictionary of routes (route title:route tag)
+        self.routeDictionary = self.getRouteList(agency)
+
+        self.routeStops = {}
+        print(self.routeDictionary)
+        print(len(self.routeDictionary))
+
+        #Write stops to a file
+        stopsList = open('stopsList.txt', 'w')
+        for route in self.routeDictionary:
+            #for a given route, adds dictionary of {route:{stop tag: stop title}}
+            self.routeStops.update({route:self.getRouteConfig(agency, self.routeDictionary[route])})
+            stopsList.write('%s: %s\n' %(route, self.routeStops[route]))
+            time.sleep(0.1)
+        stopsList.close()
+
     def getAgencyList(self):
         """
         Obtain a list of available transit agencies.
@@ -68,10 +92,7 @@ class NextBusAPI(object):
         routeListRoot = routeList.getroot()
         routeDictionary = {}
         for child in routeListRoot:
-            if child.get('shortTitle'):
-                routeDictionary.update({child.get('shortTitle'):child.get('tag')})
-            else:
-                routeDictionary.update({child.get('title'):child.get('tag')})
+            routeDictionary.update({child.get('title'):child.get('tag')})
 
         return routeDictionary
 
@@ -88,15 +109,25 @@ class NextBusAPI(object):
 
         print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
 
-        #Create a dictionary with stop tags:stop titles.
-        stopsDictionaryByTag = {}
+        #Creates a dictionary for the given route w/ stop titles as keys and stop tags as values
+        #Need to be able to find all stop tags associated with a certain stop title.
+        """
+        self.stopsDictionary = {}
+        self.routeConfigRoot = self.routeConfig.getroot()
+        for child in self.routeConfigRoot:
+            for stop in child:
+                self.stopsDictionary.update({stop.get('title'):stop.get('tag')})
+        print('Stops dictionary: ', self.stopsDictionary)
+        """
         routeConfigRoot = routeConfig.getroot()
+        stopsDictionaryByTag = {}
         for route in routeConfigRoot:
             for stop in route:
                 stopsDictionaryByTag.update({stop.get('tag'):stop.get('title')})
 
-        #print('Stops Dictionary by Tag:', self.stopsDictionaryByTag)
         return stopsDictionaryByTag
+
+        #print('Stops Dictionary by Tag:', self.stopsDictionaryByTag)
 
 
     def getPredictionRequest(self, agency, route, stop):
@@ -117,105 +148,52 @@ class NextBusAPI(object):
                 for prediction in direction:
                     #print(prediction.items())
                     timeList.append(prediction.get('minutes'))
-                busDepartureTimes[direction.get('title')] = timeList
+                busDepartureTimes[direction.get('title')]= timeList
 
         return busDepartureTimes
 
 
-
-
     def BartRoutesResponse(self, routeInput, stopInput, directionInput = None):
         """Takes stop, route, and optionally direction as input.
-        Returns a dictionary with destinations as keys and a list of upcoming departure times as values."""
-
-        #Booleans to track whether the route and bus stop have been found.
-        routeIsFound = False
-        stopIsFound = False
+        Returns a dictionary with all keys of stop titles and elements of list of estimated upcoming departure times in minutes.
+        If direction is specified, returns a dictionary with only the specified direction and its estimated upcoming departure times."""
+        self.routeInput = routeInput
+        self.stopInput = stopInput
+        self.directionInput = directionInput
+        #self.agencyTag = 'actransit' already, from initiation
 
         #From route title, find route tag
-        routeDictionary = self.getRouteList(self.agencyTag)
+        self.getRouteList(self.agencyTag)
         #route dictionary will be defined, with title:tag
-
-        routeTag = routeDictionary[routeInput]
-        #print('Route Input:', routeInput, 'Route Tag:', routeTag)
-        if routeTag != None:
-            print("Route found.")
-            routeIsFound = True
+        self.routeTag = self.routeDictionary[self.routeInput]
+        print('Route Input:', self.routeInput, 'Route Tag:', self.routeTag)
 
         #From stop title, find stop tags
-        stopsDictionaryByTag = self.getRouteConfig(self.agencyTag, routeTag)
+        self.getRouteConfig(self.agencyTag, self.routeTag)
+
+        #Check stopsDictionaryByTag for all instances of the stop title, and fetch the associated tags
+        self.stopTags = []
+        for tag in self.stopsDictionaryByTag:
+            if self.stopsDictionaryByTag[tag] == self.stopInput:
+                self.stopTags.append(tag)
+
+        print('Stop Input:', self.stopInput, 'Stop Tags:', self.stopTags)
+
+        allDepartureTimes = {}
+        #Make prediction request
+        for tag in self.stopTags:
+            allDepartureTimes.update(self.getPredictionRequest(self.agencyTag, self.routeTag, tag))
 
 
-        #Clean up user's input so it matches something in stop tags
-        #Should fix so that '40th and telegraph' matches 'Telegraph Av & 40th St'
-        #Need to break input down into key elements, break stop dictionary titles down into key elements, and see where we get a match.
-
-        #First, break user's input down into individual lowercase words
-        stopInputBreakdown = stopInput.lower().split()
-        #Then remove generic terms
-        genericTerms = ['&', 'and', '(', ')', 'blvd', 'ter', 'terrace', 'dr', 'drive',
-        'rd', 'road', 'st', 'street', 'av', 'avenue', 'ln', 'lane', 'pl', 'place',
-        'wy', 'way', 'ct', 'court']
-        for term in genericTerms:
-            while term in stopInputBreakdown:
-                stopInputBreakdown.remove(term)
-        #Then sort the list
-        stopInputBreakdown.sort()
-        # print('Stop input breakdown: ', stopInputBreakdown)
-
-        #Then do the same for the dictionary:
-        for tag in stopsDictionaryByTag:
-            stopsDictionaryByTag[tag] = str(stopsDictionaryByTag[tag]).lower().split()
-            for term in genericTerms:
-                while term in stopsDictionaryByTag[tag]:
-                    stopsDictionaryByTag[tag].remove(term)
-            stopsDictionaryByTag[tag].sort()
-            #print(stopsDictionaryByTag[tag])
-
-        #Finally, make sure all of the unique elements of the input are in the stop dictionary:
-        stopTags = []
-        for tag in stopsDictionaryByTag:
-            match = True
-            for entry in stopInputBreakdown:
-                if entry not in stopsDictionaryByTag[tag]:
-                    match = False
-            if match:
-                stopTags.append(tag)
-
-        if len(stopTags) > 0:
-            print("Stop(s) found.")
-            stopIsFound = True
-        # print('Stop Input:' + stopInput + ', Stop Tags:', stopTags)
-
-        #Make prediction request, assign to dictionary
-        departureTimes = {}
-        for tag in stopTags:
-            departureTimes.update(self.getPredictionRequest(self.agencyTag, routeTag, tag))
-
-
-        #If a direciton input was specified, use only that direciton's results.
         if directionInput:
-            departureTimes = {directionInput:departureTimes[directionInput]}
+            filteredDepartureTimes = {self.directionInput:allDepartureTimes[self.directionInput]}
+            print(filteredDepartureTimes)
+            return filteredDepartureTimes
 
-        print(departureTimes)
-        return departureTimes, routeIsFound, stopIsFound
+        print("Upcoming departures from", self.stopInput + ":",  allDepartureTimes)
+        return(allDepartureTimes)
 
-        """
-        #make string of 'Destination1: time1 min, time2 min, time3 min\nDestination2: time min, time2 min, time3 min'
-        departureStatement = "Upcoming departures of the %s line from %s:" %(routeInput, stopInput)
 
-        for destination in departureTimes:
-            departureStatement +=("\n%s:" %destination)
-            for time in departureTimes[destination]:
-                departureStatement += (' %s min,' %str(time))
-            #Remove final comma
-            if departureStatement[-1] == ',':
-                departureStatement = departureStatement[0:len(departureStatement) -1]
-
-        print(departureTimes)
-        print(departureStatement)
-        return(departureStatement)
-        """
 
 
 if __name__ == '__main__':
@@ -259,12 +237,4 @@ if __name__ == '__main__':
     #Test: BARTRoutesResponse
     # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57", directionInput = "Foothill Square" )
     # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57")
-    NextBus.BartRoutesResponse(stopInput = " telegraph 40th", routeInput = "57", directionInput = 'Foothill Square')
-    # NextBus.BartRoutesResponse(stopInput = "dana and durant", routeInput = "6")
-    # NextBus.BartRoutesResponse(stopInput = "broadway and 12th", routeInput = "6")
-    # NextBus.BartRoutesResponse(stopInput = "keller and greenridge", routeInput = "650")
-    # NextBus.BartRoutesResponse(stopInput = 'dana and durant', routeInput = '6')
-    # NextBus.BartRoutesResponse(stopInput = 'flip and flop', routeInput = '6')
-
-
     # pass

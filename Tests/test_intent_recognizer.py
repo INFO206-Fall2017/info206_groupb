@@ -1,3 +1,6 @@
+import sys
+sys.path.append(sys.path[0] + '/Slackbot')  
+
 import unittest
 from Slackbot import *
 from Slackbot.intent_recognizer import IntentRecognizer, BARTQueryIntent, BusQueryIntent, HelpIntent
@@ -19,12 +22,12 @@ class IntentRecognizerTest(unittest.TestCase):
 
     def test_bus(self):
       recognizer = IntentRecognizer()
-      intent = recognizer.recognize("bus macarthur and maple 57 emeryville")
+      intent = recognizer.recognize("bus College Av & Ashby Av 51B University Av & 9th St")
       self.assertIsInstance(intent, BusQueryIntent)
 
     def test_bus2(self):
       recognizer = IntentRecognizer()
-      intent = recognizer.recognize("bus emeryville 57 macarthur and maple")
+      intent = recognizer.recognize("bus University Av & 9th St 51B College Av & Ashby Av")
       self.assertIsInstance(intent, BusQueryIntent)
 
     def test_help(self):
