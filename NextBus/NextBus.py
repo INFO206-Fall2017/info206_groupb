@@ -62,7 +62,7 @@ class NextBusAPI(object):
         routeListFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
         routeList = ET.parse(routeListFeed)
 
-        #print("getRouteList url request: ", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
+        print("getRouteList url request: ", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
 
         #Get dictionary of route tag: route title
         routeListRoot = routeList.getroot()
@@ -86,7 +86,7 @@ class NextBusAPI(object):
         routeConfigFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
         routeConfig = ET.parse(routeConfigFeed)
 
-        #print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
+        print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
 
         #Create a dictionary with stop tags:stop titles.
         stopsDictionaryByTag = {}
@@ -128,6 +128,9 @@ class NextBusAPI(object):
         """Takes stop, route, and optionally direction as input.
         Returns a dictionary with destinations as keys and a list of upcoming departure times as values."""
 
+        #Booleans to track whether the route and bus stop have been found.
+        routeIsFound = False
+        stopIsFound = False
 
         #From route title, find route tag
         routeDictionary = self.getRouteList(self.agencyTag)
@@ -135,6 +138,9 @@ class NextBusAPI(object):
 
         routeTag = routeDictionary[routeInput]
         #print('Route Input:', routeInput, 'Route Tag:', routeTag)
+        if routeTag != None:
+            print("Route found.")
+            routeIsFound = True
 
         #From stop title, find stop tags
         stopsDictionaryByTag = self.getRouteConfig(self.agencyTag, routeTag)
@@ -176,6 +182,9 @@ class NextBusAPI(object):
             if match:
                 stopTags.append(tag)
 
+        if len(stopTags) > 0:
+            print("Stop(s) found.")
+            stopIsFound = True
         # print('Stop Input:' + stopInput + ', Stop Tags:', stopTags)
 
         #Make prediction request, assign to dictionary
@@ -189,7 +198,7 @@ class NextBusAPI(object):
             departureTimes = {directionInput:departureTimes[directionInput]}
 
         print(departureTimes)
-        return departureTimes
+        return departureTimes, routeIsFound, busIsFound
 
         """
         #make string of 'Destination1: time1 min, time2 min, time3 min\nDestination2: time min, time2 min, time3 min'
@@ -250,10 +259,12 @@ if __name__ == '__main__':
     #Test: BARTRoutesResponse
     # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57", directionInput = "Foothill Square" )
     # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57")
-    NextBus.BartRoutesResponse(stopInput = " telegraph 40th", routeInput = "57", directionInput = 'Foothill Square')
+    # NextBus.BartRoutesResponse(stopInput = " telegraph 40th", routeInput = "57", directionInput = 'Foothill Square')
     # NextBus.BartRoutesResponse(stopInput = "dana and durant", routeInput = "6")
     # NextBus.BartRoutesResponse(stopInput = "broadway and 12th", routeInput = "6")
     # NextBus.BartRoutesResponse(stopInput = "keller and greenridge", routeInput = "650")
     # NextBus.BartRoutesResponse(stopInput = 'dana and durant', routeInput = '6')
+    NextBus.BartRoutesResponse(stopInput = 'flip and flop', routeInput = '6')
+
 
     # pass
