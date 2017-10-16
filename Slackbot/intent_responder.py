@@ -28,9 +28,12 @@ class IntentResponder:
       return HelpIntent()
 
   def respond_to_bart_intent(self, intent):
-    # TODO: check if there's destination specified
-    etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin,
-                                            destination_station_name=intent.destination)
+    if intent.destination is None: 
+      etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin)
+    else:
+      etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin,
+                                              destination_station_name=intent.destination)
+      
     response = BARTQueryResponse()
     response.routes = [{ 
       "origin": intent.origin, 
