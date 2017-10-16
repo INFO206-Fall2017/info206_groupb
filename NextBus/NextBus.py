@@ -1,6 +1,5 @@
 import urllib.request
 import xml.etree.ElementTree as ET
-import re
 #https://docs.python.org/3.0/library/urllib.request.html
 #https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.XMLPullParser
 
@@ -16,22 +15,6 @@ class NextBusAPI(object):
         Route title
         Direction
         Departure Time Estimate
-
-    Methods should accept BARTQueryIntent and return a BARTRoutesResponse.
-
-    BusQueryIntent (a subclass of Intent)
-		Represents a user’s intent to query for bus schedules
-		Attributes:
-            origin (string): The origin bus station
-            Route (string): The AC Transit bus route in question, for example “6”, “51B”
-            direction (string, optional): The direction in question, for example, “Northbound”
-
-    BusRoutesResponse
-		Represents a response containing bus route schedules
-		Attributes:
-            departures (list of  DateTime): The schedule of departures from that specific route.
-
-    Assume NextBus object will be called once and then used repeatedly.
     """
 
     def __init__(self):
@@ -58,11 +41,12 @@ class NextBusAPI(object):
         Obtain a list of routes for a given agency.
         The agency is specified by the "a" parameter in the query string.
         The tag for the agency is obtained from the agencyList command.
+        Returns a dictionary of {route title:route tag}, or {route short title: route tag} where short titles are available.
         """
         routeListFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
         routeList = ET.parse(routeListFeed)
 
-        print("getRouteList url request: ", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
+        # print("getRouteList url request: ", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=%s' %agency)
 
         #Get dictionary of route tag: route title
         routeListRoot = routeList.getroot()
@@ -86,7 +70,7 @@ class NextBusAPI(object):
         routeConfigFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
         routeConfig = ET.parse(routeConfigFeed)
 
-        print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
+        # print("getRouteConfig url request:", 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=%s&r=%s' %(agency, route))
 
         #Create a dictionary with stop tags:stop titles.
         stopsDictionaryByTag = {}
@@ -105,7 +89,7 @@ class NextBusAPI(object):
         Obtain predictions associated with a particular stop. There are two ways to specify the stop: 1) using a stopId or 2) by specifying the route and stop tags.​
         Returns a list of bus departure times, with the first item being the route direction.
         """
-        print('getPredictionRequest url: ', 'http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=%s&r=%s&s=%s' %(agency, route, stop))
+        # print('getPredictionRequest url: ', 'http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=%s&r=%s&s=%s' %(agency, route, stop))
         self.predictionRequestFeed = urllib.request.urlopen('http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=%s&r=%s&s=%s' %(agency, route, stop))
         self.predictionRequest = ET.parse(self.predictionRequestFeed)
 
@@ -122,11 +106,12 @@ class NextBusAPI(object):
         return busDepartureTimes
 
 
-
-
     def BartRoutesResponse(self, routeInput, stopInput, directionInput = None):
-        """Takes stop, route, and optionally direction as input.
-        Returns a dictionary with destinations as keys and a list of upcoming departure times as values."""
+        """
+        Takes stop, route, and optionally direction as input.
+        Returns a dictionary with destinations as keys and a list of upcoming departure times as values.
+        Also returns 'routeIsFound' and 'stopIsFound' booleans that indicate whether a route and stop(s) were successfully found.
+        """
 
         #Booleans to track whether the route and bus stop have been found.
         routeIsFound = False
@@ -139,7 +124,7 @@ class NextBusAPI(object):
         routeTag = routeDictionary[routeInput]
         #print('Route Input:', routeInput, 'Route Tag:', routeTag)
         if routeTag != None:
-            print("Route found.")
+            # print("Route found.")
             routeIsFound = True
 
         #From stop title, find stop tags
@@ -152,6 +137,7 @@ class NextBusAPI(object):
 
         #First, break user's input down into individual lowercase words
         stopInputBreakdown = stopInput.lower().split()
+
         #Then remove generic terms
         genericTerms = ['&', 'and', '(', ')', 'blvd', 'ter', 'terrace', 'dr', 'drive',
         'rd', 'road', 'st', 'street', 'av', 'avenue', 'ln', 'lane', 'pl', 'place',
@@ -183,7 +169,7 @@ class NextBusAPI(object):
                 stopTags.append(tag)
 
         if len(stopTags) > 0:
-            print("Stop(s) found.")
+            # print("Stop(s) found.")
             stopIsFound = True
         # print('Stop Input:' + stopInput + ', Stop Tags:', stopTags)
 
@@ -197,11 +183,12 @@ class NextBusAPI(object):
         if directionInput:
             departureTimes = {directionInput:departureTimes[directionInput]}
 
-        print(departureTimes)
+        print(departureTimes, "\nRoute Is Found:", routeIsFound, "\nStop Is Found:", stopIsFound)
         return departureTimes, routeIsFound, stopIsFound
 
         """
-        #make string of 'Destination1: time1 min, time2 min, time3 min\nDestination2: time min, time2 min, time3 min'
+        # Make string of 'Destination1: time1 min, time2 min, time3 min\nDestination2: time min, time2 min, time3 min'.
+        # Code unused to allow slack code to parse and display results.
         departureStatement = "Upcoming departures of the %s line from %s:" %(routeInput, stopInput)
 
         for destination in departureTimes:
@@ -219,6 +206,9 @@ class NextBusAPI(object):
 
 
 if __name__ == '__main__':
+    """
+    Test Cases
+    """
     NextBus = NextBusAPI()
 
     """
@@ -258,8 +248,8 @@ if __name__ == '__main__':
 
     #Test: BARTRoutesResponse
     # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57", directionInput = "Foothill Square" )
-    # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57")
-    NextBus.BartRoutesResponse(stopInput = " telegraph 40th", routeInput = "57", directionInput = 'Foothill Square')
+    NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57")
+    # NextBus.BartRoutesResponse(stopInput = " telegraph 40th", routeInput = "57", directionInput = 'Foothill Square')
     # NextBus.BartRoutesResponse(stopInput = "dana and durant", routeInput = "6")
     # NextBus.BartRoutesResponse(stopInput = "broadway and 12th", routeInput = "6")
     # NextBus.BartRoutesResponse(stopInput = "keller and greenridge", routeInput = "650")
