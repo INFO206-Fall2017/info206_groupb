@@ -32,27 +32,33 @@ def handle_command(command, channel):
         are valid commands. If so, then acts on the commands. If not,
         returns back what it needs for clarification.
     """
-    intent = irec.recognize(command)
-    
-    if debug_on:
+    global debug_on
+    if command == 'debug on':
+        debug_on = True
+    elif command == 'debug off':
+        debug_on = False
+    else:
+        intent = irec.recognize(command)
+        
+        if debug_on:
+            slack_client.api_call("chat.postMessage", 
+                                channel=channel,
+                                text="Found intent: " + json.dumps(intent.__dict__),
+                                as_user=True)
+
+        response = ires.respond_to_intent(intent)
+
+        if debug_on:
+            slack_client.api_call("chat.postMessage", 
+                                channel=channel,
+                                text="Response: " + json.dumps(response.__dict__),
+                                as_user=True)
+
+        slack_response = mf.format(response)
         slack_client.api_call("chat.postMessage", 
-                            channel=channel,
-                            text="Found intent: " + json.dumps(intent.__dict__),
-                            as_user=True)
-
-    response = ires.respond_to_intent(intent)
-
-    if debug_on:
-        slack_client.api_call("chat.postMessage", 
-                            channel=channel,
-                            text="Response: " + json.dumps(response.__dict__),
-                            as_user=True)
-
-    slack_response = mf.format(response)
-    slack_client.api_call("chat.postMessage", 
-                            channel=channel,
-                            attachments=slack_response["attachments"],
-                            as_user=True)
+                                channel=channel,
+                                attachments=slack_response["attachments"],
+                                as_user=True)
 
 
 def parse_slack_output(slack_rtm_output):
