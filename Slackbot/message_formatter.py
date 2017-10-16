@@ -123,15 +123,23 @@ class MessageFormatter:
     return {
         "attachments": [
             {
-                "title": "A list of all stations can be found here.",
-                "title_link": "https://www.bart.gov/stations",
+                "title": "Proper input formatting is shown below: ",
+                # "title_link": "https://www.bart.gov/stations",
                 "color": "#E74C3C",
                 "pretext": "I couldn't understand what you mean. Below is a link of all station names and the proper input formatting.",
                 "text": "[Bart or Bus] + [Station Name] + [Line of station or direction]",
-                "mrkdwn_in": [
-                    "text",
-                    "pretext"
-                ]
+                "fields": [
+                    {
+                        "title":"List of all BART stations here: ",
+                        "value": "https://www.bart.gov/stations"
+                    },
+                    {
+                        "title":"List of all Bus stations here: ",
+                        "value": "http://www.nextbus.com/#!/actransit/B/B_61_0/1410350/1014970"
+                    }
+                ],
+                "image_url": "https://media.giphy.com/media/kLpkCMqucdva/giphy.gif"
+                
             }
         ]
     }
