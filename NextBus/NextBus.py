@@ -198,7 +198,7 @@ class NextBusAPI(object):
             departureTimes = {directionInput:departureTimes[directionInput]}
 
         print(departureTimes)
-        return departureTimes, routeIsFound, busIsFound
+        return departureTimes, routeIsFound, stopIsFound
 
         """
         #make string of 'Destination1: time1 min, time2 min, time3 min\nDestination2: time min, time2 min, time3 min'
@@ -259,12 +259,12 @@ if __name__ == '__main__':
     #Test: BARTRoutesResponse
     # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57", directionInput = "Foothill Square" )
     # NextBus.BartRoutesResponse(stopInput = "40th St & Telegraph Av", routeInput = "57")
-    # NextBus.BartRoutesResponse(stopInput = " telegraph 40th", routeInput = "57", directionInput = 'Foothill Square')
+    NextBus.BartRoutesResponse(stopInput = " telegraph 40th", routeInput = "57", directionInput = 'Foothill Square')
     # NextBus.BartRoutesResponse(stopInput = "dana and durant", routeInput = "6")
     # NextBus.BartRoutesResponse(stopInput = "broadway and 12th", routeInput = "6")
     # NextBus.BartRoutesResponse(stopInput = "keller and greenridge", routeInput = "650")
     # NextBus.BartRoutesResponse(stopInput = 'dana and durant', routeInput = '6')
-    NextBus.BartRoutesResponse(stopInput = 'flip and flop', routeInput = '6')
+    # NextBus.BartRoutesResponse(stopInput = 'flip and flop', routeInput = '6')
 
 
     # pass
