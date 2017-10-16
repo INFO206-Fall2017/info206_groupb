@@ -1,11 +1,14 @@
 from Slackbot import intent_responder
-from Slackbot.intent_responder import BARTQueryResponse, BusQueryResponse
+from Slackbot.intent_responder import BARTQueryResponse as BARTQueryResponse
+from Slackbot.intent_responder import BusQueryResponse as BusQueryResponse
 
 class MessageFormatter:
   def format(self, response):
-    if type(response) is BARTQueryResponse:
+    if type(response).__name__ == 'BARTQueryResponse':
+      print("bart object instance")
       return self.formatBARTResponse(response)
-    elif type(response) is BusQueryResponse: 
+    elif type(response).__name__ == 'BusQueryResponse': 
+      print("bus ofject instance")
       return self.formatBusResponse(response)
     else:
       return self.formatHelpResponse()
@@ -14,7 +17,7 @@ class MessageFormatter:
   def formatBARTResponse(self, response):
     list = []
     for r in response.routes:
-        list.append(formatBARTResponseItem(r))
+        list.append(self.formatBARTResponseItem(r))
 
     return {
         "attachments": list
@@ -56,7 +59,7 @@ class MessageFormatter:
   def formatBusResponse(self, response):
     list = []
     for r in response.routes:
-        list.append(formatBusResponseItem(r))
+        list.append(self.formatBusResponseItem(r))
 
     return {
         "attachments": list

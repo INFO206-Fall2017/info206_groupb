@@ -9,6 +9,8 @@ class Intent:
 class BARTQueryIntent(Intent):
   def __init__(self, dictionary = None):
     if dictionary is not None:
+      self.origin = None
+      self.destination = None
       entities = dictionary.get("entities", {})
       stops = entities.get("stop", [])
       origins = entities.get("origin", [])
@@ -30,6 +32,9 @@ class BARTQueryIntent(Intent):
 class BusQueryIntent(Intent):
   def __init__(self, dictionary = None):
     if dictionary is not None:
+      self.origin = None
+      self.destination = None
+      self.route = None
       entities = dictionary.get("entities", {})
       stops = entities.get("stop", [])
       routes = entities.get("bus_route", [])
