@@ -2,77 +2,100 @@ from Slackbot import intent_responder
 from Slackbot.intent_responder import BARTQueryResponse, BusQueryResponse
 
 class MessageFormatter:
-  def format(self, response, index):
+  def format(self, response):
     if type(response) is BARTQueryResponse:
-      return self.formatBARTResponse(response, index)
+      return self.formatBARTResponse(response)
     elif type(response) is BusQueryResponse: 
-      return self.formatBusResponse(response, index)
+      return self.formatBusResponse(response)
     else:
       return self.formatHelpResponse()
     pass
 
-  def formatBARTResponse(self, response, trainindex): 
+  def formatBARTResponse(self, response):
+    list = []
+    for r in response.routes:
+        list.append(formatBARTResponseItem(r))
+
+    return {
+        "attachments": list
+    }
+
+
+  def formatBARTResponseItem(self, response): 
 
     # this will create a string of all the times
     # do this for every entry that is given
     timelist =""
     index = 0
-    for time in response.routes[trainindex]["departures"]:
+    for time in response["departures"]:
         timelist += time
+
+        # index is used here to not add a comma after the last numerical value
         index += 1
-        if index != len(response.routes[trainindex]["departures"]):
+
+        if index != len(response["departures"]):
             timelist += ", "
     finaltimelist = timelist + " minutes"
 
 
     return {
-        "attachments": [
-            {
-                "title": response.routes[trainindex]["destination"],
+                "title": response["destination"],
                 "color": "#2ECC71",
-                "pretext": "Latest BART times for {}".format(response.routes[trainindex]["origin"]),
+                "pretext": "Latest BART times for {}".format(response["origin"]),
                 "text": finaltimelist,
                 "mrkdwn_in": [
                     "text",
                     "pretext"
                 ]
             }
-        ]
+    
+
+
+  # create the old formatBusResponse item below
+
+  def formatBusResponse(self, response):
+    list = []
+    for r in response.routes:
+        list.append(formatBusResponseItem(r))
+
+    return {
+        "attachments": list
     }
 
-  def formatBusResponse(self, response, busindex): 
+
+
+  def formatBusResponseItem(self, response): 
     # this will create a string of all the times
     # do this for every entry that is given
     timelist =""
     index = 0
-    for time in response.routes[busindex]["departures"]:
+    for time in response["departures"]:
         timelist += time
         index += 1
-        if index != len(response.routes[busindex]["departures"]):
+        if index != len(response["departures"]):
             timelist += ", "
     finaltimelist = timelist + " minutes"
 
     # check if the direction key exists. If not, then we show destination as the title instead
-    if "direction" in response.routes[busindex]:
-        directionordestination = response.routes[busindex]["direction"]
+    if "direction" in response:
+        directionordestination = response["direction"]
     else:
-        directionordestination = response.routes[busindex]["destination"]
+        directionordestination = response["destination"]
+
+    # include code here that only diplays pretext once
 
 
     return {
-        "attachments": [
-            {
                 "title": directionordestination,
                 "color": "#F4D03F",
-                "pretext": "Latest Bus times for {}".format(response.routes[busindex]["origin"]),
+                "pretext": "Latest Bus times for {}".format(response["origin"]),
                 "text": finaltimelist,
                 "mrkdwn_in": [
                     "text",
                     "pretext"
                 ]
             }
-        ]
-    }
+
 
   def formatHelpResponse(self):
     return {

@@ -17,7 +17,7 @@ class MessageFormatterTest(unittest.TestCase):
       formatter = message_formatter.MessageFormatter()
       print('\nTesting format without response')
       # calls the format method within the message formatter class
-      slack_response = formatter.format(None, None)
+      slack_response = formatter.format(None)
       # prints out the attachments 
       print(slack_response, '\n')
       # send the HTTP request to slack
