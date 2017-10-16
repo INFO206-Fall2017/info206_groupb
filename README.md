@@ -48,39 +48,41 @@ git push heroku master
 
 The inputs from the user are a route (mandatory), stop (mandatory), and destination (optional). E.g. 'Telegraph and 40th 6 Foothill Square'.
 
+Our NextBus.py code returns a dictionary with keys of destination names and values of a list of upcoming departure times for that destination, as well as booleans indicating whether any routes or stops were returned that we use in handling errors.
+
+
 #### Agency List
 
-**Input: None**
+*Input: None*
 
-**Output: List of agency tags**
+*Output: List of agency tags*
 
 Obtains a list of available transit agencies. Currently we've hardcoded it to use actransit, but with minimum modifications it could be used for any of NextBus's affiliate transit systems.
 
 #### Route List
 
-**Input: Agency tag**
+*Input: Agency tag*
 
-**Output: List of routes for that agency**
+*Output: List of routes for that agency*
 
 We used this command to create a dictionary of routes that we could compare the user's route request against.
 
 #### Route Config
 
-**Input: Agency, Route**
+*Input: Agency, Route*
 
-**Output: List of stops for a given route**
+*Output: List of stops for a given route*
 
 We used this to create a dictionary of stops that we could compare the user's stop request against. Because NextBus requires a route for this command if more than 100 routes would be returned otherwise (and AC Transit has >150 routes), we require the user to enter a route, not just a stop.
 
 #### Prediction Request
 
-**Input: Agency, Route, Stop**
+*Input: Agency, Route, Stop*
 
-**Output: List of departure times for buses heading out from this stop; one list for each route destination.**
+*Output: List of departure times for buses heading out from this stop; one list for each route destination.*
 
 Finally, we use this command to generate the key information our users are after: upcoming departure times. If the user provided a destination, we filter the results to show only that destination. 
 
-Our NextBus.py code returns a dictionary with keys of destination names and values of a list of upcoming departure times for that destination, as well as booleans indicating whether any routes or stops were returned that we use in handling errors.
 
 ## Testing
 
