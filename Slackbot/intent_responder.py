@@ -32,19 +32,22 @@ class IntentResponder:
       return HelpIntent()
 
   def respond_to_bart_intent(self, intent):
-    if intent.destination is None: 
-      etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin)
-    else:
-      etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin,
-                                              destination_station_name=intent.destination)
+    try: 
+      if intent.destination is None: 
+        etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin)
+      else:
+        etd_dict = self.bart_api.first_leg_train_etd(origin_station_name=intent.origin,
+                                                destination_station_name=intent.destination)
+      response = BARTQueryResponse()
+      response.routes = [{ 
+        "origin": intent.origin, 
+        "destination": dest,
+        "departures": departures
+      } for dest, departures in etd_dict.items()]
 
-    response = BARTQueryResponse()
-    response.routes = [{ 
-      "origin": intent.origin, 
-      "destination": dest,
-      "departures": departures
-    } for dest, departures in etd_dict.items()]
-    return response
+      return response
+    except ValueError as e: 
+      pass
 
   def respond_to_bus_intent(self, intent):
     # TODO: Fix case sensitivity

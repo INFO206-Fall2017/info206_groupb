@@ -169,6 +169,12 @@ class BartApi(object):
                             origin_station_name='fremont',
                             destination_station_name='pittburgh'):
 
+        if(origin_station_name is None):
+            origin_station_name = ''
+
+        if(destination_station_name is None):
+            destination_station_name = ''
+
         origin_station_name = origin_station_name.upper()
         destination_station_name = destination_station_name.upper()
 
