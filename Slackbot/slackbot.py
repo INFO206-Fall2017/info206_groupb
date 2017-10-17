@@ -24,7 +24,7 @@ irec = IntentRecognizer()
 ires = IntentResponder()
 mf = MessageFormatter()
 
-debug_on = True
+debug_on = False
 
 def handle_command(command, channel):
     """
@@ -32,27 +32,39 @@ def handle_command(command, channel):
         are valid commands. If so, then acts on the commands. If not,
         returns back what it needs for clarification.
     """
-    intent = irec.recognize(command)
-    
-    if debug_on:
-        slack_client.api_call("chat.postMessage", 
-                            channel=channel,
-                            text="Found intent: " + json.dumps(intent.__dict__),
-                            as_user=True)
+    global debug_on
+    if command == 'debug on':
+        debug_on = True
+    elif command == 'debug off':
+        debug_on = False
+    else:
+        intent = irec.recognize(command)
+        
+        if debug_on:
+            slack_client.api_call("chat.postMessage", 
+                                channel=channel,
+                                text="Found intent: " + json.dumps(intent.__dict__),
+                                as_user=True)
 
-    response = ires.respond_to_intent(intent)
+        response = ires.respond_to_intent(intent)
 
-    if debug_on:
-        slack_client.api_call("chat.postMessage", 
-                            channel=channel,
-                            text="Response: " + json.dumps(response.__dict__),
-                            as_user=True)
+        if debug_on:
+            slack_client.api_call("chat.postMessage", 
+                                channel=channel,
+                                text="Response: " + json.dumps(response.__dict__),
+                                as_user=True)
 
-    slack_response = mf.format(response)
-    slack_client.api_call("chat.postMessage", 
-                            channel=channel,
-                            attachments=slack_response["attachments"],
-                            as_user=True)
+        slack_response = mf.format(response)
+        if 'attachments' in slack_response:
+            slack_client.api_call("chat.postMessage", 
+                                    channel=channel,
+                                    attachments=slack_response["attachments"],
+                                    as_user=True)
+        elif 'text' in slack_response:
+            slack_client.api_call("chat.postMessage", 
+                                    channel=channel,
+                                    text=slack_response["text"],
+                                    as_user=True)
 
 
 def parse_slack_output(slack_rtm_output):
@@ -81,7 +93,7 @@ if __name__ == "__main__":
     thread = Thread(target = runHttp)
     thread.start()
     if slack_client.rtm_connect():
-        print("StarterBot connected and running!")
+        print("RTM connected and running!")
         while True:
             command, channel = parse_slack_output(slack_client.rtm_read())
             if command and channel:

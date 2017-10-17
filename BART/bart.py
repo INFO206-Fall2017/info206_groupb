@@ -115,8 +115,12 @@ class BartApi(object):
         origin_station_name = origin_station_name.upper()
 
         if origin_station_name not in self.station_name_abbr_dict:
+<<<<<<< HEAD
             raise ValueError("No such origin station found - %s" % (origin_station_name))
             # raises a ValueError if input station is not a valid input.
+=======
+            raise ValueError(origin_station_name)
+>>>>>>> 9ed79110687137f9de85a240bda9e89a1854f3e3
 
         origin_station_abbr = self.station_name_abbr_dict[origin_station_name]
 
@@ -179,12 +183,18 @@ class BartApi(object):
 
         """
 
+        if(origin_station_name is None):
+            origin_station_name = ''
+
+        if(destination_station_name is None):
+            destination_station_name = ''
+
         origin_station_name = origin_station_name.upper()
         destination_station_name = destination_station_name.upper()
 
         # raises error if the input stations are not correct - spelling mistake, non-existing stations
         if origin_station_name not in self.station_name_abbr_dict:
-            raise ValueError("No such origin station found - %s" % (origin_station_name))
+            raise ValueError(origin_station_name)
         elif destination_station_name not in self.station_name_abbr_dict:
             print("No such destination station found - %s" % (destination_station_name))
             return self.get_estimated_times(origin_station_name=origin_station_name,
@@ -208,8 +218,7 @@ class BartApi(object):
             'schedule']['request']['trip'][0]['leg'][0]['@trainHeadStation']
         if first_leg_final_station_abbr not in self.station_abbr_name_dict:
             # print(pretty_print_dict(self.station_abbr_name_dict))
-            raise ValueError("No such station abbr found - %s" %
-                             (first_leg_final_station_abbr))
+            raise ValueError(first_leg_final_station_abbr)
 
         line_final_station_name = self.station_abbr_name_dict[first_leg_final_station_abbr]
         # sets the line_name equal to the name of the final_station by searching its abbreviation in the station_abbr_name_dict

@@ -1,6 +1,8 @@
 from Slackbot import intent_responder
 from Slackbot.intent_responder import BARTQueryResponse as BARTQueryResponse
 from Slackbot.intent_responder import BusQueryResponse as BusQueryResponse
+from Slackbot.intent_responder import NamesNotFoundResponse as NamesNotFoundResponse
+
 
 # set up 4 colors to cycle through for each "time"
 colorlist = ["#F4D03F", "#3498DB", "#2ECC71", "#E74C3C", "#85C1E9"]
@@ -8,11 +10,13 @@ colorlist = ["#F4D03F", "#3498DB", "#2ECC71", "#E74C3C", "#85C1E9"]
 class MessageFormatter:
   def format(self, response):
     if type(response).__name__ == 'BARTQueryResponse':
-      print("bart object instance")
       return self.formatBARTResponse(response)
     elif type(response).__name__ == 'BusQueryResponse': 
-      print("bus ofject instance")
       return self.formatBusResponse(response)
+    elif type(response).__name__ == 'NamesNotFoundResponse': 
+      return self.formatNamesNotFoundResponse(response)
+    elif type(response).__name__ == 'NoDeparturesResponse':
+      return self.formatNoDeparturesResponse(response)
     else:
       return self.formatHelpResponse()
     pass
@@ -122,11 +126,23 @@ class MessageFormatter:
                 ]
             }
 
+  def formatNamesNotFoundResponse(self, response):
+    names = []
+    for n in response.names:
+        names.append('"' + n["name"] + '"')
+    return {
+        "text": "I don't know what's " + ','.join(names)
+    }
+
+  def formatNoDeparturesResponse(self, response):
+    return {
+      "text": "There's currently no departures on that route from that station."
+    }
 
   def formatHelpResponse(self):
     return {
         "attachments": [
-            {   
+            {
                 "title": "Proper input formatting is shown below: ",
                 # "title_link": "https://www.bart.gov/stations",
                 "color": "#E74C3C",
