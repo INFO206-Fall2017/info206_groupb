@@ -28,9 +28,9 @@ def pretty_print_dict(any_dict=None):
 
 def get_bart_json(page=""):
     response = requests.get(page)
-    """ sending and receiving requests"""
+    """ function for sending requests and receiving a json response"""
 
-    # This raises a ValueError if status_code is not 200
+    # This raises a ValueError if status_code is not 200 and data can not be accessed
     if response.status_code != 200:
         raise ValueError(
             "There is some problem with API - Check whether page %s is accessible" % (page))
@@ -47,7 +47,8 @@ class BartApi(object):
 
     def get_station_name_dict(self):
         '''
-            This function can be used/called to find all stations and corresponding abbr (required for page request)
+            This function can be used/called to find the name/list
+            of all BART stations and their corresponding abbreviations (required for page request)
         '''
         station_list_page = '%s/stn.aspx?cmd=stns&key=%s&json=y' % (
             BartApi.API_PREFIX, BartApi.API_KEY)
@@ -59,7 +60,7 @@ class BartApi(object):
 
         '''
         loading json output returns a dictionary"payload_dict" - which comprises of a list of
-        stations - which is further comprised of dict
+        stations - which is in further comprised of more dictionaries
         {[{},{},{},{}],[{},{},{},{}],[{},{},{},{}],[{},{},{},{}]}
         '''
 
@@ -93,7 +94,7 @@ class BartApi(object):
                 name = 'warm springs'
 
             abbr = station_dict['abbr'].upper()
-            # converting to uppercase to make inputs case independent
+            # converting to uppercase to make inputs are case independent
 
             station_name_abbr_dict[name] = abbr
             station_abbr_name_dict[abbr] = name
@@ -101,19 +102,21 @@ class BartApi(object):
 
         # print(station_name_abbr_dict, station_abbr_name_dict)
         return station_name_abbr_dict, station_abbr_name_dict
+        # returns two dictionaries one with name of BART stations as key and abbreviations as value and other does the opposite
 
     def get_estimated_times(self,
                             origin_station_name='fremont',
                             line_final_station_name=None):
         """
             get_estimated_times function returns the time after which the user can catch the next
-            BART from a input station by specifying a origin station and line
+            BART from a input station by specifying a origin station and line or
         """
 
         origin_station_name = origin_station_name.upper()
 
         if origin_station_name not in self.station_name_abbr_dict:
             raise ValueError(origin_station_name)
+            # raises a ValueError if input station is not a valid input.
 
         origin_station_abbr = self.station_name_abbr_dict[origin_station_name]
 
@@ -121,10 +124,12 @@ class BartApi(object):
             BartApi.API_PREFIX, origin_station_abbr, BartApi.API_KEY)
 
         bart_json = get_bart_json(page=etd_page)
+        # sends a requests to BART api to get the expected time of delivery and receives an input in json format
         payload_dict = json.loads(bart_json)
         # print(pretty_print_dict(payload_dict))
 
         etd_list = payload_dict['root']['station'][0]['etd']
+        # generates a list from dictionary obtained that displays the expected time of departures of BART train
 
         destination_etd_dict = {}
         '''
@@ -168,6 +173,11 @@ class BartApi(object):
     def first_leg_train_etd(self,
                             origin_station_name='fremont',
                             destination_station_name='pittburgh'):
+        """
+        this functions gives the ETD - it finds the final sation name for the line - "arrivig at " station input and then
+        uses the output as one of the arguments (line_final_station_name) to run self.get_estimated_times to generate BART etd
+
+        """
 
         if(origin_station_name is None):
             origin_station_name = ''
@@ -178,12 +188,15 @@ class BartApi(object):
         origin_station_name = origin_station_name.upper()
         destination_station_name = destination_station_name.upper()
 
+        # raises error if the input stations are not correct - spelling mistake, non-existing stations
         if origin_station_name not in self.station_name_abbr_dict:
             raise ValueError(origin_station_name)
         elif destination_station_name not in self.station_name_abbr_dict:
             print("No such destination station found - %s" % (destination_station_name))
             return self.get_estimated_times(origin_station_name=origin_station_name,
                                             line_final_station_name=None)
+
+            # if the name of departing from station is correct but the input for final station is incorrect - it displays list all BART from the departing from station
 
         origin_station_abbr = self.station_name_abbr_dict[origin_station_name]
         destination_station_abbr = self.station_name_abbr_dict[destination_station_name]
@@ -192,8 +205,11 @@ class BartApi(object):
             BartApi.API_PREFIX, origin_station_abbr, destination_station_abbr, BartApi.API_KEY)
 
         bart_json = get_bart_json(page=quick_planner_page)
+        # sends a requests and receives it form BART api quick planner
         payload_dict = json.loads(bart_json)
 
+        # the key named "trip" is a list with different trips - 0th index of the list trip gives the first leg of the journey
+        # the first leg's (leg is a list) is a dictionary and the key @trainHeadStation of this dictionary gives the final station of the first train boarded
         first_leg_final_station_abbr = payload_dict['root'][
             'schedule']['request']['trip'][0]['leg'][0]['@trainHeadStation']
         if first_leg_final_station_abbr not in self.station_abbr_name_dict:
@@ -201,6 +217,7 @@ class BartApi(object):
             raise ValueError(first_leg_final_station_abbr)
 
         line_final_station_name = self.station_abbr_name_dict[first_leg_final_station_abbr]
+        # sets the line_name equal to the name of the final_station by searching its abbreviation in the station_abbr_name_dict
 
         return self.get_estimated_times(origin_station_name=origin_station_name,
                                         line_final_station_name=line_final_station_name)
