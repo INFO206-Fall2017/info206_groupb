@@ -39,6 +39,35 @@ heroku config:set BOT_ID=YOUR_BOT_ID
 heroku config:set SLACK_BOT_TOKEN=YOUR_SLACK_BOT_TOKEN
 git push heroku master
 ```
+##BART 
+https://api.bart.gov/docs/overview/index.aspx / BART API gives access to information about BART services and station data available on the BART website. The requests are sent using the requests library that allows sending HTTP/1.1 requests. The requests generates a json output that  returns a dictionary which comprises of a list of stations - which is in further comprised of more dictionaries
+        {[{},{},{},{}],[{},{},{},{}],[{},{},{},{}],[{},{},{},{}]}
+
+
+The code gives output for these 3 scenarios
+
+CASE1 ) User can input name of station( “Departing from” station ) and BART line. 
+Input format:  BART    Station name       BART line
+This input search will display the time schedule of next BART available from the input BART station for the input BART line (only). For example the input BART Downtown Berkeley Richmond would only display the time schedule of the next BART train from Downtown Berkeley station towards Richmond Line.
+
+CASER 2) Users can only input the name of station ( “Departing from” station) without specifying a BART  line
+Input format:  BART    Station name
+This input search will display a list of time schedules for all BART line from the input BART
+station. For example the input BART Richmond will provide the user the time schedules for the next available BART for all lines such as Richmond, Daly City, Warm Springs/South Fremont, Fremont, Pleasanton/Dublin, Pittsburg/Bay Point.
+
+Option 3) Users can input name of 2 stations ( “Departing from”  and "arriving at" station)
+Input format:  BART    Station name1      Station name2
+This input search will display a the time schedule for a BART that can help users reach from BART station1 to BART station2.
+For example the input BART Richmond   Fremont will provide the user the time schedules for the next available BART from Richmond to Fremont.
+
+The only mandatory input required from the user is the name of departing from station
+
+If the bart.py is run as a separate script. The script requires the user to input the "departing from" station(mandatory)
+, bart line , and "arriving at" station.
+The BART folder has a file named that test_bart.py has a unit test to test fucntions (from bart.py) that yield a static output.
+
+
+'''
 
 ## NextBus
 
@@ -49,6 +78,8 @@ git push heroku master
 The inputs from the user are a route (mandatory), stop (mandatory), and destination (optional). E.g. 'Telegraph and 40th 6 Foothill Square'.
 
 Our NextBus.py code returns a dictionary with keys of destination names and values of a list of upcoming departure times for that destination, as well as booleans indicating whether any routes or stops were returned that we use in handling errors.
+
+
 
 
 #### Agency List
