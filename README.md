@@ -114,6 +114,25 @@ We used this to create a dictionary of stops that we could compare the user's st
 
 Finally, we use this command to generate the key information our users are after: upcoming departure times. If the user provided a destination, we filter the results to show only that destination. 
 
+## Slack Message Formatting
+
+### Attachment Formatting Functions
+
+message_formatter.py is used to format resulting data from Nextbus and Bart depending on the type of response. The format() function within this script will call 5 different formatting functions depending on the type. These five types are:
+
+* formatBARTResponse()
+* formatBusResponse()
+* formatNamesNotFoundResponse()
+* formatNoDeparturesResponse()
+* formatHelpResponse()
+
+BARTQueryResponse and BusQueryResponse types will call their own individual functions in which the values in the respective dictionaries will be inserted into Slack messaging attachments. This converted attachment will then be posted on Slack where departing times will be listed. 
+
+NamesNotFoundResponse types will call a function that returns a formatted message telling the user that it doesn't know what the user typed in. This will be called when an incorrect station name is given.
+
+NoDepartureResponse types will call a function that returns a formatted message in which it tells the user that there are currently no departures on that route. This will be called when there are no longer any departures for that station.
+
+Everything else will call the formatHelpResponse function that formats a message telling the user what the correct format will be as well as links to station names of both Bart and NextBus. This will be called with the user does not follow the proper format for inputs.
 
 ## Testing
 
