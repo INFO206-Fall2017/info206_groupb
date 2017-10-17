@@ -115,12 +115,8 @@ class BartApi(object):
         origin_station_name = origin_station_name.upper()
 
         if origin_station_name not in self.station_name_abbr_dict:
-<<<<<<< HEAD
-            raise ValueError("No such origin station found - %s" % (origin_station_name))
-            # raises a ValueError if input station is not a valid input.
-=======
             raise ValueError(origin_station_name)
->>>>>>> 9ed79110687137f9de85a240bda9e89a1854f3e3
+            # raises a ValueError if input station is not a valid input.
 
         origin_station_abbr = self.station_name_abbr_dict[origin_station_name]
 
