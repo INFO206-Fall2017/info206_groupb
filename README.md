@@ -22,24 +22,22 @@ pipenv run python3 Slackbot/slackbot.py
 
 export BOT_ID=YOUR_BOT_ID
 export SLACK_BOT_TOKEN=YOUR_SLACK_BOT_TOKEN
+export WIT_AI_ACCESS_TOKEN=YOUR_WIT_AI_ACCESS_TOKEN
 python Slackbot/slackbot.py
 ```
 ## Production Deployment
 
-This project supports hosting on heroku through Procfile and Pipfile. To run on heroku, copy the directory `starter_slackbot` outside of this repo to start a new local repository 
+This project supports hosting on heroku through Procfile and Pipfile. To run on heroku, follow these steps
 
 ``` sh
-cd starter_slackbot
-git init
-git add .
-git commit -m "Initial Commit"
 heroku create
-heroku buildpacks:set heroku/python
 heroku config:set BOT_ID=YOUR_BOT_ID
 heroku config:set SLACK_BOT_TOKEN=YOUR_SLACK_BOT_TOKEN
+heroku config:set WIT_AI_ACCESS_TOKEN=YOUR_WIT_AI_ACCESS_TOKEN
 git push heroku master
 ```
-##BART 
+## BART 
+
 https://api.bart.gov/docs/overview/index.aspx / BART API gives access to information about BART services and station data available on the BART website. The requests are sent using the requests library that allows sending HTTP/1.1 requests. The requests generates a json output that  returns a dictionary which comprises of a list of stations - which is in further comprised of more dictionaries
         {[{},{},{},{}],[{},{},{},{}],[{},{},{},{}],[{},{},{},{}]}
 
