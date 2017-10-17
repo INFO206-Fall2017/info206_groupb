@@ -2,15 +2,17 @@
 Project:
 For our project, we plan to create a slack bot that users can use to obtain real time data regarding bus and BART arrival and departure times. If time permits, we will add more features to the bot.
 
-Team Members:
+## Team Members:
 Devin Huang
 Anu Pandey
 Dylan Fox
-Sun Soravis
+Soravis Prakkamakul
 
 ## Requirements
 
 * Python >= 3.6
+* Access to Wit.ai
+* Access to Slack API
 
 ## Getting Started
 
