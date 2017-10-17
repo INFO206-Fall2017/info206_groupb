@@ -118,7 +118,7 @@ class MessageFormatter:
     return {
                 "title": directionordestination,
                 "color": colorlist[colorcounter%5],
-                "pretext": "Latest Bus times for {}".format(response["origin"]),
+                "pretext": "Latest Bus times for {} on {}".format(response["origin"],response["route_name"]),
                 "text": finaltimelist,
                 "mrkdwn_in": [
                     "text",
