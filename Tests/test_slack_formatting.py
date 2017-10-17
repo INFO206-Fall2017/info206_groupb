@@ -5,13 +5,8 @@ import unittest
 import requests
 import json
 import Slackbot
-
 from Slackbot import *
 from Slackbot.intent_responder import BARTQueryResponse, BusQueryResponse
-
-# curl -X POST -H 'Content-type: application/json' \
-# --data '{"text":"Thisss is a line of text.\nAnd this is another one."}' \
-#  https://hooks.slack.com/services/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
 
 class SlackFormatterTest(unittest.TestCase):
     def test(self):

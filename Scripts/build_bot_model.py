@@ -3,7 +3,7 @@ import json
 from xml.etree import ElementTree as ET
 
 def fetch_actransit_bus_routes_and_stops():
-  # get actransit route list
+  """Gets actransit route list"""
   routes_url = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=actransit'
   r = requests.get(routes_url)
   tree = ET.fromstring(r.text)
@@ -39,6 +39,7 @@ def fetch_actransit_bus_routes_and_stops():
   return (routes, stops)
 
 def fetch_bart_stations():
+  """Gets the whole list of BART stations"""
   url = 'http://api.bart.gov/api/stn.aspx?cmd=stns&key=MW9S-E7SL-26DU-VV8V&json=y'
   r = requests.get(url)
   stations = r.json()["root"]["stations"]["station"]
@@ -48,6 +49,7 @@ def fetch_bus_stations():
   pass
 
 def to_snakecase(input_str):
+  """Convert a string to snakecase"""
   output_str = input_str.lower()
   output_str = output_str.replace(' ', '_')
   output_str = output_str.replace('.', '')
@@ -56,6 +58,7 @@ def to_snakecase(input_str):
   return output_str
 
 def delete_legacy_bart_stop_entities():
+  """Delete legacy BART stop entities in Wit.ai model"""
   headers= { 'Authorization': 'Bearer ZORCO375BQH6IX2ZUQGJACGNAVDWWYGR', 'Content-Type': 'application/json' }
   stop_values = []
   stations = fetch_bart_stations()
@@ -65,6 +68,7 @@ def delete_legacy_bart_stop_entities():
     r = requests.delete('https://api.wit.ai/entities/stop/values/' + val + '?v=20171010', headers=headers)
 
 def update_bart_stop_entity():
+  """Update BART stop entities in Wit.ai model"""
   headers= { 'Authorization': 'Bearer ZORCO375BQH6IX2ZUQGJACGNAVDWWYGR', 'Content-Type': 'application/json' }
   stop_values = []
   stations = fetch_bart_stations()
@@ -82,6 +86,7 @@ def update_bart_stop_entity():
     print(r.json())
 
 def update_bus_stop_entity():
+  """Update Bus stop entities in Wit.ai model"""
   headers= { 'Authorization': 'Bearer ZORCO375BQH6IX2ZUQGJACGNAVDWWYGR', 'Content-Type': 'application/json' }
   stop_values = []
   route_values = []
@@ -111,6 +116,7 @@ def update_bus_stop_entity():
   
 
 def main():
+  """Fetch the information required and update Wit.ai's chatbot model"""
   update_bart_stop_entity()
   update_bus_stop_entity()
     

@@ -40,6 +40,5 @@ class IntentRecognizerTest(unittest.TestCase):
       intent = recognizer.recognize("what is this")
       self.assertIsInstance(intent, HelpIntent)
 
-
 if __name__ == '__main__':
     unittest.main()

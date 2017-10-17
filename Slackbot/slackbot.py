@@ -28,9 +28,8 @@ debug_on = False
 
 def handle_command(command, channel):
     """
-        Receives commands directed at the bot and determines if they
-        are valid commands. If so, then acts on the commands. If not,
-        returns back what it needs for clarification.
+        Receives commands directed at the bot and determines the intent and entities of the command.
+        Respond to that intent or show a help message if no intent can be identified.
     """
     global debug_on
     if command == 'debug on':
@@ -69,8 +68,7 @@ def handle_command(command, channel):
 
 def parse_slack_output(slack_rtm_output):
     """
-        The Slack Real Time Messaging API is an events firehose.
-        this parsing function returns None unless a message is
+        Parses the message from RTM and returns None unless a message is
         directed at the Bot, based on its ID.
     """
     output_list = slack_rtm_output
@@ -83,6 +81,9 @@ def parse_slack_output(slack_rtm_output):
     return None, None
 
 def runHttp(server_class=HTTPServer, handler_class=MinimalHTTPRequestHandler):
+    """
+        Start a minimal HTTP server that serves a blank page to comply with Heroku's hosting requirements.
+    """
     server_address = ('', PORT)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()

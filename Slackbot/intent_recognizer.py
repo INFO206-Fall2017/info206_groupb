@@ -4,10 +4,13 @@ import requests
 WIT_AI_ACCESS_TOKEN = os.environ.get("WIT_AI_ACCESS_TOKEN")
 
 class Intent:
+  """Represents a base intent of a chat message"""
   pass
 
 class BARTQueryIntent(Intent):
+  """Represents a BART query intent"""
   def __init__(self, dictionary = None):
+    """Initilizes a BARTQueryIntent. Populate the attributes of a dictionary of Wit.ai response format is given"""
     if dictionary is not None:
       self.origin = None
       self.destination = None
@@ -30,7 +33,9 @@ class BARTQueryIntent(Intent):
 
       
 class BusQueryIntent(Intent):
+  """Represents a Bus query intent"""
   def __init__(self, dictionary = None):
+    """Initilizes a BusQueryIntent. Populate the attributes of a dictionary of Wit.ai response format is given"""
     if dictionary is not None:
       self.origin = None
       self.destination = None
@@ -57,14 +62,17 @@ class BusQueryIntent(Intent):
         self.route = routes[0].get("value")
 
 class HelpIntent(Intent):
+  """Represents an intent in the case the user is asking for help"""
   def __init__(self):
     pass
 
 class IntentRecognizer: 
+  """Implements a facade to Wit.ai's intent classifier API"""
   def __init__(self):
     self.access_token = WIT_AI_ACCESS_TOKEN
 
   def recognize(self, message):
+    """Recognizes the intent of a message. Return an Intent object of type BARTQueryIntent, BusQueryIntent, or HelpIntent"""
     message = message.replace('&', '%26')
     headers= { 'Authorization': 'Bearer ' + self.access_token, 'Content-Type': 'application/json' }
     r = requests.get('https://api.wit.ai/message?v=20171011&q=' + message, headers=headers)
