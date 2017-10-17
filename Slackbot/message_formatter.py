@@ -172,11 +172,15 @@ class MessageFormatter:
     else:
         directionordestination = response["destination"]
 
+    route_part = ""
+    route_str = response.get("route_name", None)
+    if route_str:
+        route_part = "on " + route_str
     # Return the properly formatted dictionary
     return {
                 "title": directionordestination,
                 "color": colorlist[colorcounter%5],
-                "pretext": "Latest Bus times for {} on {}".format(response["origin"],response["route_name"]),
+                "pretext": "Latest Bus times for {} {}".format(response["origin"],route_part),
                 "text": finaltimelist,
                 "mrkdwn_in": [
                     "text",
